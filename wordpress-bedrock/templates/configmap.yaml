@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "wordpress-bedrock.fullname" . }}-nginx-config
+  labels:
+    {{- include "wordpress-bedrock.labels" . | nindent 4 }}
+data:
+  nginx.conf: |
+    server {
+        listen 80;
+        server_name _;
+        root {{ .Values.wordpress.bedrock.webRoot }};
+
+        index index.php index.html index.htm;
+
+        location / {
+            try_files $uri $uri/ /index.php?$args;
+        }
+
+        location ~ \.php$ {
+            fastcgi_pass 127.0.0.1:9000;
+            fastcgi_index index.php;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            include fastcgi_params;
+        }
+
+        # Deny access to . files
+        location ~ /\. {
+            deny all;
+        }
+
+        # Deny access to wp-config.php file
+        location = /wp-config.php {
+            deny all;
+        }
+    }

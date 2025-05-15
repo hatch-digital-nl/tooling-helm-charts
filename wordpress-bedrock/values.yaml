@@ -1,0 +1,109 @@
+## Global settings
+nameOverride: ""
+fullnameOverride: ""
+
+## Image settings
+image:
+  repository: wordpress
+  tag: php8.1-fpm
+  pullPolicy: IfNotPresent
+
+## Nginx image for serving WordPress
+nginxImage:
+  repository: nginx
+  tag: 1.21-alpine
+  pullPolicy: IfNotPresent
+
+## Application settings
+wordpress:
+  # Bedrock specific settings
+  bedrock:
+    enabled: true
+    webRoot: "/var/www/html/public"
+  
+  # Environment variables
+  env:
+    # Database settings
+    DB_NAME: wordpress
+    DB_USER: wordpress
+    DB_PASSWORD: ""
+    DB_HOST: mysql
+    DB_PREFIX: wp_
+    
+    # WordPress environment
+    WP_ENV: production
+    WP_HOME: https://example.com
+    WP_SITEURL: https://example.com/wp
+    
+    # WordPress security keys and salts
+    # Generate these using: https://roots.io/salts.html
+    AUTH_KEY: ""
+    SECURE_AUTH_KEY: ""
+    LOGGED_IN_KEY: ""
+    NONCE_KEY: ""
+    AUTH_SALT: ""
+    SECURE_AUTH_SALT: ""
+    LOGGED_IN_SALT: ""
+    NONCE_SALT: ""
+
+## Persistence settings
+persistence:
+  enabled: true
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 10Gi
+  
+## Service settings
+service:
+  type: ClusterIP
+  port: 80
+
+## Ingress settings
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+## Resource settings
+resources:
+  wordpress:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  nginx:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+## MySQL database settings
+mysql:
+  enabled: true
+  auth:
+    database: wordpress
+    username: wordpress
+    password: ""
+    rootPassword: ""
+  primary:
+    persistence:
+      enabled: true
+      size: 8Gi
+
+## Pod settings
+podAnnotations: {}
+podSecurityContext: {}
+securityContext: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
