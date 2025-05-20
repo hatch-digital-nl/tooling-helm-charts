@@ -28,14 +28,7 @@ wordpress:
     webRoot: "/var/www/html/public"
   
   # Environment variables
-  env:
-    # Database settings
-    DB_NAME: wordpress
-    DB_USER: wordpress
-    DB_PASSWORD: ""
-    DB_HOST: mysql
-    DB_PREFIX: wp_
-    
+  env:   
     # WordPress environment
     WP_ENV: production
     WP_HOME: https://example.com

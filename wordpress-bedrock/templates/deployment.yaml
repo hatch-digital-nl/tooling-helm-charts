@@ -51,50 +51,34 @@ spec:
           image: "{{ .Values.phpImage.repository }}:{{ .Values.phpImage.tag | default "latest" }}"
           imagePullPolicy: {{ .Values.phpImage.pullPolicy }}
           env:
-            {{- $envVars := dict }}
-            
-            {{- /* Eerst alle env variabelen toevoegen aan een dictionary */ -}}
             {{- range $key, $value := .Values.wordpress.env }}
-            {{- $_ := set $envVars $key $value }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
             {{- end }}
-            
-            {{- /* Daarna secrets verwerken, alleen als ze niet al in env staan of als ze expliciet in de 'override' lijst staan */ -}}
             {{- if .Values.secretMounts }}
+            # Mount secrets as environment variables
             {{- range $secretConfig := .Values.secretMounts }}
             {{- if $secretConfig.secretName }}
             {{- range $keyMapping := $secretConfig.keys }}
             {{- if kindIs "string" $keyMapping }}
-            {{- /* Alleen toevoegen als het niet in env staat */ -}}
-            {{- if or (not (hasKey $envVars $keyMapping)) (has $keyMapping $.Values.secretOverrideEnv) }}
-            {{- $_ := set $envVars $keyMapping (dict "secret" true "secretName" $secretConfig.secretName "secretKey" $keyMapping) }}
-            {{- end }}
-            {{- else }}
-            {{- /* Key met hernoemen (from -> to) */ -}}
-            {{- if or (not (hasKey $envVars $keyMapping.to)) (has $keyMapping.to $.Values.secretOverrideEnv) }}
-            {{- $_ := set $envVars $keyMapping.to (dict "secret" true "secretName" $secretConfig.secretName "secretKey" $keyMapping.from) }}
-            {{- end }}
-            {{- end }}
-            {{- end }}
-            {{- end }}
-            {{- end }}
-            {{- end }}
-            
-            {{- /* Nu alle variabelen uitlezen uit het dictionary */ -}}
-            {{- range $key, $value := $envVars }}
-            {{- if kindIs "map" $value }}
-            {{- /* Dit is een secret reference */ -}}
-            - name: {{ $key }}
+            # Simple key (no renaming)
+            - name: {{ $keyMapping }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ $value.secretName }}
-                  key: {{ $value.secretKey }}
+                  name: {{ $secretConfig.secretName }}
+                  key: {{ $keyMapping }}
             {{- else }}
-            {{- /* Dit is een gewone env var */ -}}
-            - name: {{ $key }}
-              value: {{ $value | quote }}
+            # Key with renaming (from -> to)
+            - name: {{ $keyMapping.to }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretConfig.secretName }}
+                  key: {{ $keyMapping.from }}
             {{- end }}
             {{- end }}
-            
+            {{- end }}
+            {{- end }}
+            {{- end }}
           volumeMounts:
             - name: {{ .Values.sharedVolume.name }}
               mountPath: /var/www/html
@@ -107,7 +91,7 @@ spec:
           imagePullPolicy: {{ .Values.nginxImage.pullPolicy }}
           ports:
             - name: http
-              containerPort: 8080
+              containerPort: 80
               protocol: TCP
           volumeMounts:
             - name: {{ .Values.sharedVolume.name }}
