@@ -1,0 +1,72 @@
+apiVersion: v1
+entries:
+  laravel:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-05-20T14:12:24.105517071Z"
+    description: A Helm chart for Laravel PHP Framework applications
+    digest: 378fc270ee14da544ab14f0a2b3e02614800dd1a1997fff8a8789ac60149ddb4
+    keywords:
+    - laravel
+    - php
+    - framework
+    - web
+    maintainers:
+    - name: Unframed
+    name: laravel
+    type: application
+    urls:
+    - https://unframed-nl.github.io/helm_charts/laravel-0.1.0.tgz
+    version: 0.1.0
+  react:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-05-20T14:12:24.105944175Z"
+    description: A Helm chart for React applications
+    digest: 40692bce9f8ee5269d9901680a2704cc30117fbc6f6dc288dde00daccb5e8682
+    keywords:
+    - react
+    - frontend
+    - javascript
+    maintainers:
+    - name: Unframed
+    name: react
+    type: application
+    urls:
+    - https://unframed-nl.github.io/helm_charts/react-0.1.0.tgz
+    version: 0.1.0
+  wordpress-bedrock:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-05-20T14:12:24.106399161Z"
+    description: A Helm chart for WordPress based on Bedrock structure
+    digest: 6974ed6210a05cca9c0232e3a30e6f80497e851db24e4b7a024079ef77c435b3
+    keywords:
+    - wordpress
+    - cms
+    maintainers:
+    - name: Unframed
+    name: wordpress-bedrock
+    type: application
+    urls:
+    - https://unframed-nl.github.io/helm_charts/wordpress-bedrock-0.1.0.tgz
+    version: 0.1.0
+  yii2:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-05-20T14:12:24.106857393Z"
+    description: A Helm chart for Yii2 PHP Framework applications
+    digest: 077754dc6f692213538c0115d8dd35ef56918c09c5151bb0322be8353ff3dca1
+    keywords:
+    - yii2
+    - php
+    - framework
+    - web
+    maintainers:
+    - name: Unframed
+    name: yii2
+    type: application
+    urls:
+    - https://unframed-nl.github.io/helm_charts/yii2-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-05-20T14:12:24.104982926Z"
