@@ -105,16 +105,22 @@ mysql:
 secretMounts: []
 # - secretName: "wordpress-db-credentials"
 #   keys:
-#     - "DB_NAME"
+#     # Simple key (no renaming)
 #     - "DB_USER"
 #     - "DB_PASSWORD"
 #     - "DB_HOST"
+#     # Key with renaming (from -> to)
+#     - from: "DB_DATABASE"
+#       to: "DB_NAME"
 # - secretName: "wordpress-s3-credentials"
 #   keys:
 #     - "S3_UPLOADS_BUCKET"
 #     - "S3_UPLOADS_KEY"
 #     - "S3_UPLOADS_SECRET"
 #     - "S3_UPLOADS_REGION"
+#     # Example of key renaming
+#     - from: "AWS_S3_BUCKET"
+#       to: "S3_UPLOADS_BUCKET"
 
 ## Pod settings
 podAnnotations: {}

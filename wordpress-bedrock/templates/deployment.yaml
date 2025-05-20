@@ -59,12 +59,22 @@ spec:
             # Mount secrets as environment variables
             {{- range $secretConfig := .Values.secretMounts }}
             {{- if $secretConfig.secretName }}
-            {{- range $key := $secretConfig.keys }}
-            - name: {{ $key }}
+            {{- range $keyMapping := $secretConfig.keys }}
+            {{- if kindIs "string" $keyMapping }}
+            # Simple key (no renaming)
+            - name: {{ $keyMapping }}
               valueFrom:
                 secretKeyRef:
                   name: {{ $secretConfig.secretName }}
-                  key: {{ $key }}
+                  key: {{ $keyMapping }}
+            {{- else }}
+            # Key with renaming (from -> to)
+            - name: {{ $keyMapping.to }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretConfig.secretName }}
+                  key: {{ $keyMapping.from }}
+            {{- end }}
             {{- end }}
             {{- end }}
             {{- end }}

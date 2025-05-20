@@ -52,10 +52,26 @@ You can reference existing secrets using the `secretMounts` configuration in the
 secretMounts:
   - secretName: "wordpress-db-credentials"
     keys:
-      - "DB_NAME"
       - "DB_USER"
       - "DB_PASSWORD"
       - "DB_HOST"
+      - "DB_NAME"
+```
+
+#### Key Renaming
+
+Sometimes the key names in your secrets might not match what your application expects. For example, your secret might have `DB_DATABASE` but WordPress expects `DB_NAME`. The chart supports renaming keys when mounting them as environment variables:
+
+```yaml
+secretMounts:
+  - secretName: "wordpress-db-credentials"
+    keys:
+      - "DB_USER"
+      - "DB_PASSWORD"
+      - "DB_HOST"
+      # Rename DB_DATABASE to DB_NAME
+      - from: "DB_DATABASE"
+        to: "DB_NAME"
 ```
 
 #### Using Multiple Secrets Simultaneously
@@ -66,22 +82,26 @@ The chart supports mounting multiple secrets simultaneously. All keys from all r
 secretMounts:
   - secretName: "wordpress-db-credentials"
     keys:
-      - "DB_NAME"
       - "DB_USER"
       - "DB_PASSWORD"
       - "DB_HOST"
+      - from: "DB_DATABASE"
+        to: "DB_NAME"
   - secretName: "wordpress-s3-credentials"
     keys:
-      - "S3_UPLOADS_BUCKET"
       - "S3_UPLOADS_KEY"
       - "S3_UPLOADS_SECRET"
       - "S3_UPLOADS_REGION"
+      # Rename AWS_S3_BUCKET to S3_UPLOADS_BUCKET
+      - from: "AWS_S3_BUCKET"
+        to: "S3_UPLOADS_BUCKET"
 ```
 
 This approach allows you to:
 1. Reference existing secrets created outside the chart
 2. Mount multiple secrets with different purposes
 3. Select specific keys from each secret to mount as environment variables
+4. Rename keys to match what your application expects
 
 ## Parameters
 
@@ -122,6 +142,9 @@ This approach allows you to:
 | `secretMounts`            | List of secret configurations to mount as environment vars | `[]`            |
 | `secretMounts[].secretName` | Name of the existing Kubernetes Secret                   | `""`            |
 | `secretMounts[].keys`     | List of keys from the secret to mount as environment vars  | `[]`            |
+| `secretMounts[].keys[]`   | String key name or object with from/to for key renaming    | `""`            |
+| `secretMounts[].keys[].from` | Original key name in the secret                         | `""`            |
+| `secretMounts[].keys[].to`   | Desired environment variable name in the container      | `""`            |
 
 ### MySQL Parameters
 
