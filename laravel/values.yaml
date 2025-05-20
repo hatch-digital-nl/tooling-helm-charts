@@ -4,58 +4,59 @@ fullnameOverride: ""
 
 ## Image settings
 phpImage:
-  repository: rg.nl-ams.scw.cloud/unframed-container-registry/php
-  tag: "8.3"
+  repository: registry.scaleway.com/unframed/php
+  tag: "8.1-fpm"
   pullPolicy: IfNotPresent
 
-## Nginx image for serving WordPress
+## Nginx image for serving Laravel
 nginxImage:
-  repository: rg.nl-ams.scw.cloud/unframed-container-registry/nginx
-  tag: "latest"
+  repository: registry.scaleway.com/unframed/nginx
+  tag: "stable-alpine"
   pullPolicy: IfNotPresent
 
 ## Data container for application files
 dataImage:
-  repository: rg.nl-ams.scw.cloud/unframed-container-registry/dummy_page
+  repository: registry.scaleway.com/unframed/laravel-data
   tag: "latest"
   pullPolicy: IfNotPresent
 
 ## Application settings
-wordpress:
-  # Bedrock specific settings
-  bedrock:
-    enabled: true
-    webRoot: "/var/www/html/public"
-  
-  # Environment variables
+laravel:
   env:
-    # Database settings
-    DB_NAME: wordpress
-    DB_USER: wordpress
-    DB_PASSWORD: ""
+    APP_NAME: Laravel
+    APP_ENV: production
+    APP_KEY: ""
+    APP_DEBUG: "false"
+    APP_URL: https://example.com
+    
+    LOG_CHANNEL: stack
+    LOG_LEVEL: debug
+    
+    DB_CONNECTION: mysql
     DB_HOST: mysql
-    DB_PREFIX: wp_
+    DB_PORT: 3306
+    DB_DATABASE: laravel
+    DB_USERNAME: laravel
+    DB_PASSWORD: ""
     
-    # WordPress environment
-    WP_ENV: production
-    WP_HOME: https://example.com
-    WP_SITEURL: https://example.com/wp
-    
-    # WordPress security keys and salts
-    # Generate these using: https://roots.io/salts.html
-    AUTH_KEY: ""
-    SECURE_AUTH_KEY: ""
-    LOGGED_IN_KEY: ""
-    NONCE_KEY: ""
-    AUTH_SALT: ""
-    SECURE_AUTH_SALT: ""
-    LOGGED_IN_SALT: ""
-    NONCE_SALT: ""
+    BROADCAST_DRIVER: log
+    CACHE_DRIVER: file
+    FILESYSTEM_DISK: local
+    QUEUE_CONNECTION: sync
+    SESSION_DRIVER: file
+    SESSION_LIFETIME: 120
+  
+  # Laravel specific settings
+  config:
+    webRoot: "/var/www/html/public"
 
 ## Shared volume settings
 sharedVolume:
   name: app-data
-  
+
+## Scaling settings
+replicaCount: 1
+
 ## Service settings
 service:
   type: ClusterIP
@@ -73,16 +74,19 @@ ingress:
           pathType: ImplementationSpecific
   tls: []
 
-## Scaling settings
-replicaCount: 1
-
 ## Resource settings
 resources:
   php:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
     requests:
       cpu: 500m
       memory: 512Mi
   nginx:
+    limits:
+      cpu: 500m
+      memory: 512Mi
     requests:
       cpu: 100m
       memory: 128Mi
@@ -91,8 +95,8 @@ resources:
 mysql:
   enabled: true
   auth:
-    database: wordpress
-    username: wordpress
+    database: laravel
+    username: laravel
     password: ""
     rootPassword: ""
   primary:

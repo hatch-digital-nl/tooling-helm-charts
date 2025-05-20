@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "yii2.fullname" . }}-nginx-config
+  labels:
+    {{- include "yii2.labels" . | nindent 4 }}
+data:
+  nginx.conf: |
+    server {
+        listen 80;
+        server_name _;
+        root {{ .Values.yii2.config.webRoot }};
+
+        index index.php index.html;
+
+        location / {
+            try_files $uri $uri/ /index.php$is_args$args;
+        }
+
+        # Pass PHP scripts to PHP-FPM
+        location ~ \.php$ {
+            fastcgi_pass 127.0.0.1:9000;
+            fastcgi_index index.php;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            include fastcgi_params;
+            fastcgi_param PATH_INFO $fastcgi_path_info;
+        }
+
+        # Deny access to . files
+        location ~ /\. {
+            deny all;
+        }
+
+        # Enable browser caching for static assets
+        location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|woff|woff2|ttf|eot)$ {
+            expires 30d;
+            add_header Cache-Control "public, no-transform";
+        }
+    }

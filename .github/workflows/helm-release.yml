@@ -1,0 +1,74 @@
+name: Release Helm Charts
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'helm_charts/**'
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.10.0
+
+      - name: Add Helm repos
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+
+      - name: Create Helm package directory
+        run: |
+          mkdir -p .cr-release-packages
+          mkdir -p .cr-index
+
+      - name: Package Helm Charts
+        run: |
+          cd helm_charts
+          for chart in */; do
+            if [ -f "${chart}Chart.yaml" ]; then
+              echo "Packaging chart: ${chart}"
+              helm package "${chart}" -d ../.cr-release-packages
+            fi
+          done
+
+      - name: Create/Update Helm Repository Index
+        run: |
+          helm repo index .cr-release-packages --url https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+          cp .cr-release-packages/index.yaml .cr-index/
+
+      - name: Publish Helm Charts
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: .cr-release-packages
+          target-folder: .
+          branch: gh-pages
+          git-config-name: ${{ github.actor }}
+          git-config-email: ${{ github.actor }}@users.noreply.github.com
+          commit-message: "Update Helm repository"
+          clean: false
+
+      - name: Publish Helm Repository Index
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: .cr-index
+          target-folder: .
+          branch: gh-pages
+          git-config-name: ${{ github.actor }}
+          git-config-email: ${{ github.actor }}@users.noreply.github.com
+          commit-message: "Update Helm repository index"
+          clean: false

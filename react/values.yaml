@@ -1,0 +1,67 @@
+## Global settings
+nameOverride: ""
+fullnameOverride: ""
+
+## Image settings
+nginxImage:
+  repository: registry.scaleway.com/unframed/nginx
+  tag: "stable-alpine"
+  pullPolicy: IfNotPresent
+
+## Data container for application files
+dataImage:
+  repository: registry.scaleway.com/unframed/react-data
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+## Application settings
+react:
+  env:
+    NODE_ENV: production
+    API_URL: https://api.example.com
+  
+  # React specific settings
+  config:
+    webRoot: "/var/www/html"
+
+## Shared volume settings
+sharedVolume:
+  name: app-data
+
+## Scaling settings
+replicaCount: 1
+
+## Service settings
+service:
+  type: ClusterIP
+  port: 80
+
+## Ingress settings
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+## Resource settings
+resources:
+  nginx:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+## Pod settings
+podAnnotations: {}
+podSecurityContext: {}
+securityContext: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}

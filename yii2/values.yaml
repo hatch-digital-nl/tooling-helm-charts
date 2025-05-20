@@ -4,58 +4,43 @@ fullnameOverride: ""
 
 ## Image settings
 phpImage:
-  repository: rg.nl-ams.scw.cloud/unframed-container-registry/php
-  tag: "8.3"
+  repository: registry.scaleway.com/unframed/php
+  tag: "8.1-fpm"
   pullPolicy: IfNotPresent
 
-## Nginx image for serving WordPress
+## Nginx image for serving Yii2
 nginxImage:
-  repository: rg.nl-ams.scw.cloud/unframed-container-registry/nginx
-  tag: "latest"
+  repository: registry.scaleway.com/unframed/nginx
+  tag: "stable-alpine"
   pullPolicy: IfNotPresent
 
 ## Data container for application files
 dataImage:
-  repository: rg.nl-ams.scw.cloud/unframed-container-registry/dummy_page
+  repository: registry.scaleway.com/unframed/yii2-data
   tag: "latest"
   pullPolicy: IfNotPresent
 
 ## Application settings
-wordpress:
-  # Bedrock specific settings
-  bedrock:
-    enabled: true
-    webRoot: "/var/www/html/public"
-  
-  # Environment variables
+yii2:
   env:
-    # Database settings
-    DB_NAME: wordpress
-    DB_USER: wordpress
+    YII_DEBUG: "false"
+    YII_ENV: prod
+    DB_DSN: mysql:host=mysql;dbname=yii2
+    DB_USERNAME: yii2
     DB_PASSWORD: ""
-    DB_HOST: mysql
-    DB_PREFIX: wp_
-    
-    # WordPress environment
-    WP_ENV: production
-    WP_HOME: https://example.com
-    WP_SITEURL: https://example.com/wp
-    
-    # WordPress security keys and salts
-    # Generate these using: https://roots.io/salts.html
-    AUTH_KEY: ""
-    SECURE_AUTH_KEY: ""
-    LOGGED_IN_KEY: ""
-    NONCE_KEY: ""
-    AUTH_SALT: ""
-    SECURE_AUTH_SALT: ""
-    LOGGED_IN_SALT: ""
-    NONCE_SALT: ""
+    COOKIE_VALIDATION_KEY: ""
+  
+  # Yii2 specific settings
+  config:
+    webRoot: "/var/www/html/web"
 
 ## Shared volume settings
 sharedVolume:
   name: app-data
-  
+
+## Scaling settings
+replicaCount: 1
+
 ## Service settings
 service:
   type: ClusterIP
@@ -73,16 +58,19 @@ ingress:
           pathType: ImplementationSpecific
   tls: []
 
-## Scaling settings
-replicaCount: 1
-
 ## Resource settings
 resources:
   php:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
     requests:
       cpu: 500m
       memory: 512Mi
   nginx:
+    limits:
+      cpu: 500m
+      memory: 512Mi
     requests:
       cpu: 100m
       memory: 128Mi
@@ -91,8 +79,8 @@ resources:
 mysql:
   enabled: true
   auth:
-    database: wordpress
-    username: wordpress
+    database: yii2
+    username: yii2
     password: ""
     rootPassword: ""
   primary:

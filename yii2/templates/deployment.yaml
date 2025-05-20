@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "wordpress-bedrock.fullname" . }}
+  name: {{ include "yii2.fullname" . }}
   labels:
-    {{- include "wordpress-bedrock.labels" . | nindent 4 }}
+    {{- include "yii2.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "wordpress-bedrock.selectorLabels" . | nindent 6 }}
+      {{- include "yii2.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -16,7 +16,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "wordpress-bedrock.selectorLabels" . | nindent 8 }}
+        {{- include "yii2.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -29,7 +29,7 @@ spec:
           emptyDir: {}
         - name: nginx-config
           configMap:
-            name: {{ include "wordpress-bedrock.fullname" . }}-nginx-config
+            name: {{ include "yii2.fullname" . }}-nginx-config
       initContainers:
         - name: data-container
           image: "{{ .Values.dataImage.repository }}:{{ .Values.dataImage.tag | default "latest" }}"
@@ -37,7 +37,7 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             - |
-              echo "Copying application files to shared volume..."
+              echo "Copying Yii2 application files to shared volume..."
               cp -r /app/. /data/
           volumeMounts:
             - name: {{ .Values.sharedVolume.name }}
@@ -49,7 +49,7 @@ spec:
           image: "{{ .Values.phpImage.repository }}:{{ .Values.phpImage.tag | default "latest" }}"
           imagePullPolicy: {{ .Values.phpImage.pullPolicy }}
           env:
-            {{- range $key, $value := .Values.wordpress.env }}
+            {{- range $key, $value := .Values.yii2.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
