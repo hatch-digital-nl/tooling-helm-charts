@@ -55,6 +55,20 @@ spec:
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
+            {{- if .Values.secretMounts }}
+            # Mount secrets as environment variables
+            {{- range $secretConfig := .Values.secretMounts }}
+            {{- if $secretConfig.secretName }}
+            {{- range $key := $secretConfig.keys }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretConfig.secretName }}
+                  key: {{ $key }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
           volumeMounts:
             - name: {{ .Values.sharedVolume.name }}
               mountPath: /var/www/html

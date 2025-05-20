@@ -100,6 +100,22 @@ mysql:
       enabled: true
       size: 8Gi
 
+## Secret mounts configuration
+## Reference existing secrets and mount their keys as environment variables
+secretMounts: []
+# - secretName: "wordpress-db-credentials"
+#   keys:
+#     - "DB_NAME"
+#     - "DB_USER"
+#     - "DB_PASSWORD"
+#     - "DB_HOST"
+# - secretName: "wordpress-s3-credentials"
+#   keys:
+#     - "S3_UPLOADS_BUCKET"
+#     - "S3_UPLOADS_KEY"
+#     - "S3_UPLOADS_SECRET"
+#     - "S3_UPLOADS_REGION"
+
 ## Pod settings
 podAnnotations: {}
 podSecurityContext:
