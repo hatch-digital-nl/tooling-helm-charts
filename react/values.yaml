@@ -60,8 +60,17 @@ resources:
 
 ## Pod settings
 podAnnotations: {}
-podSecurityContext: {}
-securityContext: {}
+podSecurityContext:
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop: ["ALL"]
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
 nodeSelector: {}
 tolerations: []
 affinity: {}

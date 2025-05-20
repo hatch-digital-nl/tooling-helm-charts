@@ -25,10 +25,6 @@ jobs:
         with:
           version: v3.10.0
 
-      - name: Add Helm repos
-        run: |
-          helm repo add bitnami https://charts.bitnami.com/bitnami
-
       - name: Create Helm package directory
         run: |
           mkdir -p .cr-release-packages

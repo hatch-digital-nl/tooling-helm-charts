@@ -32,6 +32,8 @@ spec:
             name: {{ include "react.fullname" . }}-nginx-config
       initContainers:
         - name: data-container
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.dataImage.repository }}:{{ .Values.dataImage.tag | default "latest" }}"
           imagePullPolicy: {{ .Values.dataImage.pullPolicy }}
           command: ["/bin/sh", "-c"]
