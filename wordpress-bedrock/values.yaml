@@ -125,7 +125,7 @@ resources:
 probes:
   php:
     liveness:
-      enabled: true
+      enabled: false
       initialDelaySeconds: 60
       periodSeconds: 10
       timeoutSeconds: 5
