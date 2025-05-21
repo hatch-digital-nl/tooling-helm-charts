@@ -46,6 +46,8 @@ spec:
           volumeMounts:
             - name: {{ .Values.sharedVolume.name }}
               mountPath: /data
+          resources:
+            {{- toYaml .Values.resources.init | nindent 12 }}
       containers:
         - name: php
           securityContext:
@@ -86,6 +88,36 @@ spec:
               mountPath: /var/www/html
           resources:
             {{- toYaml .Values.resources.php | nindent 12 }}
+          {{- if .Values.probes.php.liveness.enabled }}
+          livenessProbe:
+            exec:
+              command: {{ .Values.probes.php.liveness.command }}
+            initialDelaySeconds: {{ .Values.probes.php.liveness.initialDelaySeconds }}
+            periiodSeconds: {{ .Values.probes.php.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.php.liveness.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.php.liveness.failureThreshold }}
+            successThreshold: {{ .Values.probes.php.liveness.successThreshold }}
+          {{- end }}
+          {{- if .Values.probes.php.readiness.enabled }}
+          readinessProbe:
+            exec:
+              command: {{ .Values.probes.php.readiness.command }}
+            initialDelaySeconds: {{ .Values.probes.php.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.php.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.php.readiness.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.php.readiness.failureThreshold }}
+            successThreshold: {{ .Values.probes.php.readiness.successThreshold }}
+          {{- end }}
+          {{- if .Values.probes.php.startup.enabled }}
+          startupProbe:
+            exec:
+              command: {{ .Values.probes.php.startup.command }}
+            initialDelaySeconds: {{ .Values.probes.php.startup.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.php.startup.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.php.startup.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.php.startup.failureThreshold }}
+            successThreshold: {{ .Values.probes.php.startup.successThreshold }}
+          {{- end }}
         - name: nginx
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
@@ -105,6 +137,39 @@ spec:
               readOnly: true
           resources:
             {{- toYaml .Values.resources.nginx | nindent 12 }}
+          {{- if .Values.probes.nginx.liveness.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.probes.nginx.liveness.path }}
+              port: {{ .Values.probes.nginx.liveness.port }}
+            initialDelaySeconds: {{ .Values.probes.nginx.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.nginx.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.nginx.liveness.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.nginx.liveness.failureThreshold }}
+            successThreshold: {{ .Values.probes.nginx.liveness.successThreshold }}
+          {{- end }}
+          {{- if .Values.probes.nginx.readiness.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.probes.nginx.readiness.path }}
+              port: {{ .Values.probes.nginx.readiness.port }}
+            initialDelaySeconds: {{ .Values.probes.nginx.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.nginx.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.nginx.readiness.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.nginx.readiness.failureThreshold }}
+            successThreshold: {{ .Values.probes.nginx.readiness.successThreshold }}
+          {{- end }}
+          {{- if .Values.probes.nginx.startup.enabled }}
+          startupProbe:
+            httpGet:
+              path: {{ .Values.probes.nginx.startup.path }}
+              port: {{ .Values.probes.nginx.startup.port }}
+            initialDelaySeconds: {{ .Values.probes.nginx.startup.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.nginx.startup.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.nginx.startup.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.nginx.startup.failureThreshold }}
+            successThreshold: {{ .Values.probes.nginx.startup.successThreshold }}
+          {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

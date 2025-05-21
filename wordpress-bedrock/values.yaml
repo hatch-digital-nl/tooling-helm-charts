@@ -107,6 +107,66 @@ resources:
     requests:
       cpu: 100m
       memory: 128Mi
+  init:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+
+## Probe settings
+probes:
+  php:
+    liveness:
+      enabled: true
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
+      successThreshold: 1
+      command: ["php-fpm-healthcheck"]
+    readiness:
+      enabled: true
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
+      successThreshold: 1
+      command: ["php-fpm-healthcheck"]
+    startup:
+      enabled: false
+      initialDelaySeconds: 120
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 30
+      successThreshold: 1
+      command: ["php-fpm-healthcheck"]
+  nginx:
+    liveness:
+      enabled: true
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
+      successThreshold: 1
+      path: /
+      port: 8080
+    readiness:
+      enabled: true
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
+      successThreshold: 1
+      path: /
+      port: 8080
+    startup:
+      enabled: false
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 30
+      successThreshold: 1
+      path: /
+      port: 8080
 
 ## MySQL database settings
 mysql:

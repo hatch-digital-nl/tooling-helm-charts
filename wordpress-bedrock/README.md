@@ -12,6 +12,7 @@ This chart bootstraps a WordPress Bedrock deployment on a Kubernetes cluster usi
 - Optional MySQL database deployment
 - Support for environment variables and secrets
 - Horizontal Pod Autoscaler (HPA) for automatic scaling based on resource usage
+- Kubernetes probes (liveness, readiness, startup) for improved reliability
 
 ## Prerequisites
 
@@ -113,6 +114,28 @@ This approach allows you to:
 | `nameOverride`      | String to partially override the release name                                     | `""`            |
 | `fullnameOverride`  | String to fully override the release name                                         | `""`            |
 | `replicaCount`      | Number of replicas to deploy (ignored if autoscaling is enabled)                  | `1`             |
+
+### Probe Parameters
+
+| Name                                     | Description                                                | Value           |
+|------------------------------------------|------------------------------------------------------------|-----------------|
+| `probes.php.liveness.enabled`            | Enable liveness probe for PHP container                    | `true`          |
+| `probes.php.liveness.initialDelaySeconds`| Initial delay seconds for liveness probe                   | `60`            |
+| `probes.php.liveness.periodSeconds`      | Period seconds for liveness probe                          | `10`            |
+| `probes.php.liveness.timeoutSeconds`     | Timeout seconds for liveness probe                         | `5`             |
+| `probes.php.liveness.failureThreshold`   | Failure threshold for liveness probe                       | `6`             |
+| `probes.php.liveness.successThreshold`   | Success threshold for liveness probe                       | `1`             |
+| `probes.php.liveness.command`            | Command for exec liveness probe                            | `["php-fpm-healthcheck"]` |
+| `probes.php.readiness.enabled`           | Enable readiness probe for PHP container                   | `true`          |
+| `probes.php.readiness.*`                 | Same parameters as liveness probe                          | See values.yaml |
+| `probes.php.startup.enabled`             | Enable startup probe for PHP container                     | `false`         |
+| `probes.php.startup.*`                   | Same parameters as liveness probe                          | See values.yaml |
+| `probes.nginx.liveness.enabled`          | Enable liveness probe for Nginx container                  | `true`          |
+| `probes.nginx.liveness.*`                | Same parameters as PHP liveness probe                      | See values.yaml |
+| `probes.nginx.readiness.enabled`         | Enable readiness probe for Nginx container                 | `true`          |
+| `probes.nginx.readiness.*`               | Same parameters as PHP readiness probe                     | See values.yaml |
+| `probes.nginx.startup.enabled`           | Enable startup probe for Nginx container                   | `false`         |
+| `probes.nginx.startup.*`                 | Same parameters as PHP startup probe                       | See values.yaml |
 
 ### Autoscaling Parameters
 
@@ -243,3 +266,71 @@ autoscaling:
 ```
 
 For more information on HPA configuration, refer to the [Kubernetes documentation](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/).
+
+## Kubernetes Probes
+
+The chart supports Kubernetes probes for both the PHP and Nginx containers to improve reliability and availability. Three types of probes are available:
+
+1. **Liveness Probes**: Determine if a container is running. If the probe fails, the container is restarted.
+2. **Readiness Probes**: Determine if a container is ready to receive traffic. If the probe fails, the container is removed from service endpoints.
+3. **Startup Probes**: Determine if an application within a container has started. If the probe fails, the container is restarted.
+
+### Configuring Probes
+
+By default, liveness and readiness probes are enabled for both PHP and Nginx containers, while startup probes are disabled. You can customize the probe settings in your values file:
+
+```yaml
+probes:
+  php:
+    liveness:
+      enabled: true
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
+      successThreshold: 1
+      command: ["php-fpm-healthcheck"]
+    readiness:
+      enabled: true
+      initialDelaySeconds: 30
+      command: ["php-fpm-healthcheck"]
+      # Other parameters...
+    startup:
+      enabled: true
+      failureThreshold: 30
+      command: ["php-fpm-healthcheck"]
+      # Other parameters...
+  nginx:
+    liveness:
+      enabled: true
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
+      successThreshold: 1
+      path: /
+      port: 8080
+    # Other Nginx probe configurations...
+```
+
+### PHP-FPM Probes
+
+For the PHP-FPM container, the probes use exec commands with `php-fpm-healthcheck` to check the status of the PHP-FPM process. This is more appropriate for PHP-FPM than HTTP probes, as PHP-FPM doesn't directly handle HTTP requests but instead processes FastCGI requests.
+
+### Nginx Probes
+
+For the Nginx container, the probes are configured to check the root path (`/`) on port 8080. This ensures that the Nginx server is running and can serve web content.
+
+### Disabling Probes
+
+If you want to disable a specific probe, set its `enabled` parameter to `false`:
+
+```yaml
+probes:
+  php:
+    liveness:
+      enabled: false
+    # Other probes...
+```
+
+For more information on Kubernetes probes, refer to the [Kubernetes documentation](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/).
