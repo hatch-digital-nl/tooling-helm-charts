@@ -382,7 +382,7 @@ redis:
 
 ### Redis Persistence
 
-By default, Redis data is not persisted. For production environments, you might want to enable persistence:
+By default, Redis data is not persisted, and RDB snapshots are disabled to prevent write errors. For production environments, you might want to enable persistence:
 
 ```yaml
 redis:
@@ -391,6 +391,8 @@ redis:
     enabled: true
     size: 2Gi
 ```
+
+When persistence is disabled (the default), the chart automatically configures Redis with `--save ""` and `--stop-writes-on-bgsave-error no` to prevent errors related to disk persistence. This ensures Redis works properly in environments with limited disk access or ephemeral storage.
 
 ### W3 Total Cache Configuration
 

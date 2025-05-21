@@ -33,6 +33,12 @@ spec:
             - {{ .Values.redis.config.maxmemory | quote }}
             - --maxmemory-policy
             - {{ .Values.redis.config.maxmemoryPolicy | quote }}
+            {{- if not .Values.redis.persistence.enabled }}
+            - --save
+            - ""
+            - --stop-writes-on-bgsave-error
+            - "no"
+            {{- end }}
             {{- if .Values.redis.auth.enabled }}
             - --requirepass
             - $(REDIS_PASSWORD)
