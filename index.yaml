@@ -3,9 +3,9 @@ entries:
   laravel:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-05-21T12:09:34.654358894Z"
+    created: "2025-05-21T12:58:26.571036012Z"
     description: A Helm chart for Laravel PHP Framework applications
-    digest: a5136aaa3dce2f251a220d07a1ff10bad3e1a6f97a94a681f5b739e3322ddacd
+    digest: 9ba9ff7621276ec288e0becd28e99389af932d486a5a9db85fa58c75f1782fe4
     keywords:
     - laravel
     - php
@@ -21,9 +21,9 @@ entries:
   react:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-05-21T12:09:34.6547667Z"
+    created: "2025-05-21T12:58:26.57146313Z"
     description: A Helm chart for React applications
-    digest: 0df9bf3de4c08d33ac190352cea08adf180231f779963f69e4aa2c6c507552cc
+    digest: f38bf142f866f7426f216c16cbbc639ea186500fc2a02682748c70beed43c4eb
     keywords:
     - react
     - frontend
@@ -38,9 +38,9 @@ entries:
   wordpress-bedrock:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-05-21T12:09:34.655642073Z"
+    created: "2025-05-21T12:58:26.572245362Z"
     description: A Helm chart for WordPress based on Bedrock structure
-    digest: bc05b962d13aee10825097845ce7e134b5a775fb0412796d9ed10013dc06bc59
+    digest: fcf7fa23ed0dbdf5c0b200552283a2129bd516ead13b0b1db199cdaf337704b9
     keywords:
     - wordpress
     - cms
@@ -49,14 +49,14 @@ entries:
     name: wordpress-bedrock
     type: application
     urls:
-    - https://unframed-nl.github.io/helm_charts/wordpress-bedrock-0.13.0.tgz
-    version: 0.13.0
+    - https://unframed-nl.github.io/helm_charts/wordpress-bedrock-0.14.0.tgz
+    version: 0.14.0
   yii2:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-05-21T12:09:34.656090264Z"
+    created: "2025-05-21T12:58:26.57272559Z"
     description: A Helm chart for Yii2 PHP Framework applications
-    digest: c2b541050424146f44f27901cdb71c05a37009081c1e889c642ac945eed1504c
+    digest: 7e336f63d9a0ac6fdbecee5215e71104a7b317fec119aaa42e23c4a873be7d0a
     keywords:
     - yii2
     - php
@@ -69,4 +69,4 @@ entries:
     urls:
     - https://unframed-nl.github.io/helm_charts/yii2-0.3.0.tgz
     version: 0.3.0
-generated: "2025-05-21T12:09:34.65374735Z"
+generated: "2025-05-21T12:58:26.570411485Z"
