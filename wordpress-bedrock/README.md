@@ -118,25 +118,14 @@ This approach allows you to:
 
 ### Probe Parameters
 
-| Name                                     | Description                                                | Value           |
-|------------------------------------------|------------------------------------------------------------|-----------------|
-| `probes.php.liveness.enabled`            | Enable liveness probe for PHP container                    | `true`          |
-| `probes.php.liveness.initialDelaySeconds`| Initial delay seconds for liveness probe                   | `60`            |
-| `probes.php.liveness.periodSeconds`      | Period seconds for liveness probe                          | `10`            |
-| `probes.php.liveness.timeoutSeconds`     | Timeout seconds for liveness probe                         | `5`             |
-| `probes.php.liveness.failureThreshold`   | Failure threshold for liveness probe                       | `6`             |
-| `probes.php.liveness.successThreshold`   | Success threshold for liveness probe                       | `1`             |
-| `probes.php.liveness.command`            | Command for exec liveness probe                            | `["php-fpm-healthcheck"]` |
-| `probes.php.readiness.enabled`           | Enable readiness probe for PHP container                   | `true`          |
-| `probes.php.readiness.*`                 | Same parameters as liveness probe                          | See values.yaml |
-| `probes.php.startup.enabled`             | Enable startup probe for PHP container                     | `false`         |
-| `probes.php.startup.*`                   | Same parameters as liveness probe                          | See values.yaml |
-| `probes.nginx.liveness.enabled`          | Enable liveness probe for Nginx container                  | `true`          |
-| `probes.nginx.liveness.*`                | Same parameters as PHP liveness probe                      | See values.yaml |
-| `probes.nginx.readiness.enabled`         | Enable readiness probe for Nginx container                 | `true`          |
-| `probes.nginx.readiness.*`               | Same parameters as PHP readiness probe                     | See values.yaml |
-| `probes.nginx.startup.enabled`           | Enable startup probe for Nginx container                   | `false`         |
-| `probes.nginx.startup.*`                 | Same parameters as PHP startup probe                       | See values.yaml |
+| Name                               | Description                                                | Value           |
+|------------------------------------|------------------------------------------------------------|-----------------|
+| `probes.liveness.enabled`          | Enable liveness probe for Nginx container                  | `true`          |
+| `probes.liveness.*`                | Same parameters as PHP liveness probe                      | See values.yaml |
+| `probes.readiness.enabled`         | Enable readiness probe for Nginx container                 | `true`          |
+| `probes.readiness.*`               | Same parameters as PHP readiness probe                     | See values.yaml |
+| `probes.startup.enabled`           | Enable startup probe for Nginx container                   | `false`         |
+| `probes.startup.*`                 | Same parameters as PHP startup probe                       | See values.yaml |
 
 ### Autoscaling Parameters
 
