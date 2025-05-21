@@ -5,7 +5,9 @@ metadata:
   labels:
     {{- include "wordpress-bedrock.labels" . | nindent 4 }}
 spec:
+  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "wordpress-bedrock.selectorLabels" . | nindent 6 }}

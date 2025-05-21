@@ -11,6 +11,7 @@ This chart bootstraps a WordPress Bedrock deployment on a Kubernetes cluster usi
 - Shared volume for application files
 - Optional MySQL database deployment
 - Support for environment variables and secrets
+- Horizontal Pod Autoscaler (HPA) for automatic scaling based on resource usage
 
 ## Prerequisites
 
@@ -111,7 +112,19 @@ This approach allows you to:
 |---------------------|-----------------------------------------------------------------------------------|-----------------|
 | `nameOverride`      | String to partially override the release name                                     | `""`            |
 | `fullnameOverride`  | String to fully override the release name                                         | `""`            |
-| `replicaCount`      | Number of replicas to deploy                                                      | `1`             |
+| `replicaCount`      | Number of replicas to deploy (ignored if autoscaling is enabled)                  | `1`             |
+
+### Autoscaling Parameters
+
+| Name                                     | Description                                                | Value           |
+|------------------------------------------|------------------------------------------------------------|-----------------|
+| `autoscaling.enabled`                    | Enable autoscaling for the WordPress deployment            | `false`         |
+| `autoscaling.minReplicas`                | Minimum number of replicas                                 | `1`             |
+| `autoscaling.maxReplicas`                | Maximum number of replicas                                 | `5`             |
+| `autoscaling.targetCPUUtilizationPercentage`    | Target CPU utilization percentage                   | `80`            |
+| `autoscaling.targetMemoryUtilizationPercentage` | Target memory utilization percentage                | `80`            |
+| `autoscaling.customMetrics`              | Custom metrics for autoscaling                             | `[]`            |
+| `autoscaling.behavior`                   | Scaling behavior configuration                             | `{}`            |
 
 ### Image Parameters
 
@@ -161,3 +174,72 @@ This approach allows you to:
 ## Persistence
 
 The chart mounts an `emptyDir` volume to share files between the containers. For production use, you might want to consider using a persistent volume.
+
+## Autoscaling
+
+The chart supports Horizontal Pod Autoscaler (HPA) for automatically scaling the WordPress deployment based on resource usage. By default, autoscaling is disabled.
+
+### Enabling Autoscaling
+
+To enable autoscaling, set `autoscaling.enabled` to `true` in your values file:
+
+```yaml
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+```
+
+This configuration will:
+- Enable autoscaling for the WordPress deployment
+- Set the minimum number of replicas to 2
+- Set the maximum number of replicas to 10
+- Scale up when CPU utilization exceeds 70%
+- Scale up when memory utilization exceeds 80%
+
+### Advanced Configuration
+
+The HPA supports advanced configuration options through the `behavior` parameter:
+
+```yaml
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      selectPolicy: Max
+```
+
+You can also configure custom metrics for scaling:
+
+```yaml
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  customMetrics:
+  - type: Pods
+    pods:
+      metric:
+        name: php_requests_per_second
+      target:
+        type: AverageValue
+        averageValue: 1k
+```
+
+For more information on HPA configuration, refer to the [Kubernetes documentation](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/).
