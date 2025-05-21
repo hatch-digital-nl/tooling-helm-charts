@@ -44,6 +44,15 @@ wordpress:
     SECURE_AUTH_SALT: ""
     LOGGED_IN_SALT: ""
     NONCE_SALT: ""
+    
+    # Redis cache settings (used by W3 Total Cache plugin)
+    # These will only be set if redis.enabled is true
+    # WP_REDIS_HOST: ""
+    # WP_REDIS_PORT: "6379"
+    # WP_REDIS_PASSWORD: ""
+    # WP_REDIS_TIMEOUT: "1"
+    # WP_REDIS_READ_TIMEOUT: "1"
+    # WP_REDIS_DATABASE: "0"
 
 ## Shared volume settings
 sharedVolume:
@@ -180,6 +189,29 @@ mysql:
     persistence:
       enabled: true
       size: 8Gi
+
+## Redis cache settings
+redis:
+  enabled: false
+  image:
+    repository: redis
+    tag: "7.0-alpine"
+    pullPolicy: IfNotPresent
+  auth:
+    enabled: false
+    password: ""
+  persistence:
+    enabled: false
+    size: 1Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  service:
+    port: 6379
+  config:
+    maxmemory: "100mb"
+    maxmemoryPolicy: "allkeys-lru"
 
 ## Secret mounts configuration
 ## Reference existing secrets and mount their keys as environment variables

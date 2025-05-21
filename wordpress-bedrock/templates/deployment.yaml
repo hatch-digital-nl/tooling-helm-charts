@@ -59,6 +59,26 @@ spec:
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
+            {{- if .Values.redis.enabled }}
+            # Redis environment variables for W3 Total Cache
+            - name: WP_REDIS_HOST
+              value: {{ include "wordpress-bedrock.fullname" . }}-redis
+            - name: WP_REDIS_PORT
+              value: {{ .Values.redis.service.port | quote }}
+            {{- if .Values.redis.auth.enabled }}
+            - name: WP_REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "wordpress-bedrock.fullname" . }}-redis
+                  key: redis-password
+            {{- end }}
+            - name: WP_REDIS_TIMEOUT
+              value: "1"
+            - name: WP_REDIS_READ_TIMEOUT
+              value: "1"
+            - name: WP_REDIS_DATABASE
+              value: "0"
+            {{- end }}
             {{- if .Values.secretMounts }}
             # Mount secrets as environment variables
             {{- range $secretConfig := .Values.secretMounts }}
@@ -93,7 +113,7 @@ spec:
             exec:
               command: {{ .Values.probes.php.liveness.command }}
             initialDelaySeconds: {{ .Values.probes.php.liveness.initialDelaySeconds }}
-            periiodSeconds: {{ .Values.probes.php.liveness.periodSeconds }}
+            periodSeconds: {{ .Values.probes.php.liveness.periodSeconds }}
             timeoutSeconds: {{ .Values.probes.php.liveness.timeoutSeconds }}
             failureThreshold: {{ .Values.probes.php.liveness.failureThreshold }}
             successThreshold: {{ .Values.probes.php.liveness.successThreshold }}

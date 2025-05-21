@@ -10,6 +10,7 @@ This chart bootstraps a WordPress Bedrock deployment on a Kubernetes cluster usi
 - Nginx container for serving the application
 - Shared volume for application files
 - Optional MySQL database deployment
+- Optional Redis cache for W3 Total Cache plugin
 - Support for environment variables and secrets
 - Horizontal Pod Autoscaler (HPA) for automatic scaling based on resource usage
 - Kubernetes probes (liveness, readiness, startup) for improved reliability
@@ -194,6 +195,24 @@ This approach allows you to:
 | `mysql.primary.persistence.enabled` | Enable MySQL persistence using PVC               | `true`          |
 | `mysql.primary.persistence.size`    | PVC Storage Request for MySQL volume             | `8Gi`           |
 
+### Redis Parameters
+
+| Name                      | Description                                                | Value           |
+|---------------------------|------------------------------------------------------------|-----------------|
+| `redis.enabled`           | Deploy a Redis server for caching                          | `false`         |
+| `redis.image.repository`  | Redis image repository                                     | `redis`         |
+| `redis.image.tag`         | Redis image tag                                            | `7.0-alpine`    |
+| `redis.image.pullPolicy`  | Redis image pull policy                                    | `IfNotPresent`  |
+| `redis.auth.enabled`      | Enable Redis password authentication                       | `false`         |
+| `redis.auth.password`     | Redis password                                             | `""`            |
+| `redis.persistence.enabled` | Enable Redis persistence using PVC                       | `false`         |
+| `redis.persistence.size`  | PVC Storage Request for Redis volume                       | `1Gi`           |
+| `redis.resources.requests.cpu` | CPU resource requests                                 | `100m`          |
+| `redis.resources.requests.memory` | Memory resource requests                           | `128Mi`         |
+| `redis.service.port`      | Redis service port                                         | `6379`          |
+| `redis.config.maxmemory`  | Redis maximum memory                                       | `100mb`         |
+| `redis.config.maxmemoryPolicy` | Redis memory eviction policy                          | `allkeys-lru`   |
+
 ## Persistence
 
 The chart mounts an `emptyDir` volume to share files between the containers. For production use, you might want to consider using a persistent volume.
@@ -334,3 +353,62 @@ probes:
 ```
 
 For more information on Kubernetes probes, refer to the [Kubernetes documentation](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/).
+
+## Redis Caching
+
+The chart includes an optional Redis server for caching with the W3 Total Cache WordPress plugin. Redis caching can significantly improve the performance of WordPress sites by caching database queries, objects, and pages.
+
+### Enabling Redis
+
+To enable Redis caching, set `redis.enabled` to `true` in your values file:
+
+```yaml
+redis:
+  enabled: true
+  config:
+    maxmemory: "256mb"
+    maxmemoryPolicy: "allkeys-lru"
+```
+
+When Redis is enabled, the following environment variables are automatically set in the WordPress container:
+
+- `WP_REDIS_HOST`: The Redis service hostname
+- `WP_REDIS_PORT`: The Redis service port (default: 6379)
+- `WP_REDIS_PASSWORD`: The Redis password (if authentication is enabled)
+- `WP_REDIS_TIMEOUT`: Connection timeout (default: 1)
+- `WP_REDIS_READ_TIMEOUT`: Read timeout (default: 1)
+- `WP_REDIS_DATABASE`: Redis database index (default: 0)
+
+### Redis Authentication
+
+For production environments, it's recommended to enable Redis authentication:
+
+```yaml
+redis:
+  enabled: true
+  auth:
+    enabled: true
+    password: "your-secure-password"
+```
+
+### Redis Persistence
+
+By default, Redis data is not persisted. For production environments, you might want to enable persistence:
+
+```yaml
+redis:
+  enabled: true
+  persistence:
+    enabled: true
+    size: 2Gi
+```
+
+### W3 Total Cache Configuration
+
+After deploying WordPress with Redis enabled, you'll need to:
+
+1. Install the W3 Total Cache plugin in WordPress
+2. Configure W3 Total Cache to use Redis for object caching
+3. In the W3 Total Cache settings, set the Redis server to the environment variables that are automatically configured
+
+This setup provides a robust caching solution that can significantly improve the performance of your WordPress site.
