@@ -3,9 +3,9 @@ entries:
   laravel:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-05-21T13:35:59.653273557Z"
+    created: "2025-06-10T14:58:58.474111744Z"
     description: A Helm chart for Laravel PHP Framework applications
-    digest: ce806594a3647f00408006a5881c59b92e9a9c822ea692a764f24ac4311ff78f
+    digest: 81f73b1c97ac7391965fd011aec5d61a5b75269031906b6e27945981f68e280e
     keywords:
     - laravel
     - php
@@ -21,9 +21,9 @@ entries:
   react:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-05-21T13:35:59.653687323Z"
+    created: "2025-06-10T14:58:58.474498639Z"
     description: A Helm chart for React applications
-    digest: 3c04ef2867d0a65957c92494dbb8b4e2d837547ced2f6692eaa0153474cbe801
+    digest: 6bae9f4d9c1b3a14a59c7f98a1e61e08b5aa178f1e72cf22faef160b87b16b71
     keywords:
     - react
     - frontend
@@ -37,9 +37,9 @@ entries:
     version: 0.3.0
   wordpress-bedrock:
   - apiVersion: v2
-    created: "2025-05-21T13:35:59.654457598Z"
+    created: "2025-06-10T14:58:58.475283499Z"
     description: A Helm chart for WordPress based on Bedrock structure
-    digest: 670b4f053c60a7dbf977d7f61c5d480dffa7d62ec4080d7a77a7e18fb1468e46
+    digest: bef1b14774891fca58a7adeae3884752d451e862039e3d7998d57d5958ea063f
     keywords:
     - wordpress
     - cms
@@ -53,9 +53,9 @@ entries:
   yii2:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-05-21T13:35:59.654925184Z"
+    created: "2025-06-10T14:58:58.475937355Z"
     description: A Helm chart for Yii2 PHP Framework applications
-    digest: 6d51580d0df21638fa312318c42cda078dbcf533f9fa517e9278f9d9fb44f800
+    digest: 8c8d0fed1a25c07b0c5578ccb44d6e3ecca551b0dc66ade9d9d00ace7e06d338
     keywords:
     - yii2
     - php
@@ -68,4 +68,4 @@ entries:
     urls:
     - https://unframed-nl.github.io/helm_charts/yii2-0.3.0.tgz
     version: 0.3.0
-generated: "2025-05-21T13:35:59.652533992Z"
+generated: "2025-06-10T14:58:58.473520045Z"
