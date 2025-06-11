@@ -1,0 +1,86 @@
+{{- if .Values.cronJobs.enabled }}
+{{- range .Values.cronJobs.jobs }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "yii2.fullname" $ }}-cron-{{ .name }}
+  labels:
+    {{- include "yii2.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: cronjob
+    cronjob.yii2.io/name: {{ .name }}
+spec:
+  schedule: {{ .schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            {{- include "yii2.selectorLabels" $ | nindent 12 }}
+            app.kubernetes.io/component: cronjob
+            cronjob.yii2.io/name: {{ .name }}
+        spec:
+          {{- with $.Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          securityContext:
+            {{- toYaml $.Values.podSecurityContext | nindent 12 }}
+          volumes:
+            - name: {{ $.Values.sharedVolume.name }}
+              emptyDir: {}
+          initContainers:
+            - name: data-container
+              securityContext:
+                {{- toYaml $.Values.securityContext | nindent 16 }}
+              image: "{{ $.Values.dataImage.repository }}:{{ $.Values.dataImage.tag | default "latest" }}"
+              imagePullPolicy: {{ $.Values.dataImage.pullPolicy }}
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  echo "Copying Yii2 application files to shared volume..."
+                  cp -r /app/. /data/
+              volumeMounts:
+                - name: {{ $.Values.sharedVolume.name }}
+                  mountPath: /data
+              resources:
+                {{- toYaml $.Values.resources.init | nindent 16 }}
+          containers:
+            - name: cron
+              securityContext:
+                {{- toYaml $.Values.securityContext | nindent 16 }}
+              image: "{{ $.Values.phpImage.repository }}:{{ $.Values.phpImage.tag | default "latest" }}"
+              imagePullPolicy: {{ $.Values.phpImage.pullPolicy }}
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  cd /var/www/html && {{ .command }}
+              env:
+                {{- include "yii2.env" $ | nindent 16 }}
+              volumeMounts:
+                - name: {{ $.Values.sharedVolume.name }}
+                  mountPath: /var/www/html
+              resources:
+                {{- if .resources }}
+                {{- toYaml .resources | nindent 16 }}
+                {{- else }}
+                {{- toYaml $.Values.resources.php | nindent 16 }}
+                {{- end }}
+          restartPolicy: OnFailure
+          {{- with $.Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $.Values.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $.Values.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}
+{{- end }}

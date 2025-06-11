@@ -135,6 +135,38 @@ redis:
     maxmemory: "100mb"
     maxmemoryPolicy: "allkeys-lru"
 
+## Queue workers configuration
+## Each worker runs "php yii <name>/listen" in a PHP container
+queueWorkers:
+  enabled: false
+  # List of queue workers to deploy
+  workers: []
+  # - name: queue       # Worker name (used in command: php yii <name>/listen)
+  #   replicas: 1       # Number of worker replicas
+  #   resources:        # Optional resource limits and requests
+  #     limits:
+  #       cpu: 500m
+  #       memory: 512Mi
+  #     requests:
+  #       cpu: 100m
+  #       memory: 128Mi
+
+## Cron jobs configuration
+cronJobs:
+  enabled: false
+  # List of cron jobs to deploy
+  jobs: []
+  # - name: example-cron        # Cron job name
+  #   schedule: "*/5 * * * *"   # Cron schedule expression
+  #   command: "php yii example/command"  # Command to run
+  #   resources:                # Optional resource limits and requests
+  #     limits:
+  #       cpu: 500m
+  #       memory: 512Mi
+  #     requests:
+  #       cpu: 100m
+  #       memory: 128Mi
+
 ## Secret mounts configuration
 ## Reference existing secrets and mount their keys as environment variables
 secretMounts: []
