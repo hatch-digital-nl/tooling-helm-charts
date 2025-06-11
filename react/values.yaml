@@ -58,6 +58,29 @@ resources:
       cpu: 100m
       memory: 128Mi
 
+## Redis cache settings
+redis:
+  enabled: false
+  image:
+    repository: redis
+    tag: "7.0-alpine"
+    pullPolicy: IfNotPresent
+  auth:
+    enabled: false
+    password: ""
+  persistence:
+    enabled: false
+    size: 1Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  service:
+    port: 6379
+  config:
+    maxmemory: "100mb"
+    maxmemoryPolicy: "allkeys-lru"
+
 ## Pod settings
 podAnnotations: {}
 podSecurityContext:

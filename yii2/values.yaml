@@ -2,21 +2,22 @@
 nameOverride: ""
 fullnameOverride: ""
 
+
 ## Image settings
 phpImage:
-  repository: registry.scaleway.com/unframed/php
-  tag: "8.1-fpm"
+  repository: rg.nl-ams.scw.cloud/unframed-container-registry/php
+  tag: "8.1"
   pullPolicy: IfNotPresent
 
-## Nginx image for serving Yii2
+## Nginx image for serving WordPress
 nginxImage:
-  repository: registry.scaleway.com/unframed/nginx
-  tag: "stable-alpine"
+  repository: rg.nl-ams.scw.cloud/unframed-container-registry/nginx
+  tag: "latest"
   pullPolicy: IfNotPresent
 
 ## Data container for application files
 dataImage:
-  repository: registry.scaleway.com/unframed/yii2-data
+  repository: rg.nl-ams.scw.cloud/unframed-container-registry/dummy_page
   tag: "latest"
   pullPolicy: IfNotPresent
 
@@ -24,13 +25,7 @@ dataImage:
 yii2:
   env:
     YII_DEBUG: "false"
-    YII_ENV: prod
-    DB_DSN: mysql:host=mysql;dbname=yii2
-    DB_USERNAME: yii2
-    DB_PASSWORD: ""
-    COOKIE_VALIDATION_KEY: ""
-  
-  # Yii2 specific settings
+    YII_ENV: production
   config:
     webRoot: "/var/www/html/web"
 
@@ -44,7 +39,7 @@ replicaCount: 1
 ## Service settings
 service:
   type: ClusterIP
-  port: 80
+  port: 8080
 
 ## Ingress settings
 ingress:
@@ -153,18 +148,6 @@ secretMounts: []
 #     - from: "DB_DATABASE"
 #       to: "DB_NAME"
 
-## MySQL database settings
-mysql:
-  enabled: true
-  auth:
-    database: yii2
-    username: yii2
-    password: ""
-    rootPassword: ""
-  primary:
-    persistence:
-      enabled: true
-      size: 8Gi
 
 ## Pod settings
 podAnnotations: {}

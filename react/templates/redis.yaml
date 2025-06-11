@@ -1,0 +1,7 @@
+{{- if .Values.redis.enabled }}
+{{/* Create context for Redis */}}
+{{- $redisContext := dict "Values" .Values "fullname" (include "react.fullname" .) "labels" (include "react.labels" .) "selectorLabels" (include "react.selectorLabels" .) -}}
+
+{{/* Include common Redis templates */}}
+{{- include "common.redis" $redisContext }}
+{{- end }}

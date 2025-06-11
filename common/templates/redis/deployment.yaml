@@ -1,22 +1,20 @@
+{{- define "common.redis.deployment" -}}
 {{- if .Values.redis.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "wordpress-bedrock.fullname" . }}-redis
+  name: {{ include "common.redis.name" . }}
   labels:
-    {{- include "wordpress-bedrock.labels" . | nindent 4 }}
-    app.kubernetes.io/component: redis
+    {{- include "common.redis.labels" . }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      {{- include "wordpress-bedrock.selectorLabels" . | nindent 6 }}
-      app.kubernetes.io/component: redis
+      {{- include "common.redis.selectorLabels" . }}
   template:
     metadata:
       labels:
-        {{- include "wordpress-bedrock.selectorLabels" . | nindent 8 }}
-        app.kubernetes.io/component: redis
+        {{- include "common.redis.podSelectorLabels" . }}
     spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
@@ -52,7 +50,7 @@ spec:
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "wordpress-bedrock.fullname" . }}-redis
+                  name: {{ include "common.redis.name" . }}
                   key: redis-password
           {{- end }}
           resources:
@@ -76,6 +74,7 @@ spec:
       volumes:
         - name: redis-data
           persistentVolumeClaim:
-            claimName: {{ include "wordpress-bedrock.fullname" . }}-redis
+            claimName: {{ include "common.redis.name" . }}
       {{- end }}
 {{- end }}
+{{- end -}}

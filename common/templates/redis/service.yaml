@@ -1,11 +1,11 @@
+{{- define "common.redis.service" -}}
 {{- if .Values.redis.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "yii2.fullname" . }}-redis
+  name: {{ include "common.redis.name" . }}
   labels:
-    {{- include "yii2.labels" . | nindent 4 }}
-    app.kubernetes.io/component: redis
+    {{- include "common.redis.labels" . }}
 spec:
   type: ClusterIP
   ports:
@@ -14,6 +14,6 @@ spec:
       protocol: TCP
       name: redis
   selector:
-    {{- include "yii2.selectorLabels" . | nindent 4 }}
-    app.kubernetes.io/component: redis
+    {{- include "common.redis.selectorLabels" . }}
 {{- end }}
+{{- end -}}

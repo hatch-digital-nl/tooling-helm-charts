@@ -8,3 +8,7 @@ keywords:
   - cms
 maintainers:
   - name: Unframed
+dependencies:
+  - name: common
+    version: 0.1.0
+    repository: file://../common

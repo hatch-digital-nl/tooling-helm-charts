@@ -2,10 +2,17 @@
 
 This repository contains a collection of Helm charts for various applications:
 
+- **common**: Library chart with shared templates and functionality
 - **laravel**: Helm chart for Laravel applications
 - **react**: Helm chart for React applications
 - **wordpress-bedrock**: Helm chart for WordPress using Bedrock structure
 - **yii2**: Helm chart for Yii2 applications
+
+## Common Chart
+
+The common chart is a library chart that provides shared templates and functionality for all other charts. It currently includes:
+
+- **Redis**: Centralized Redis configuration that can be used by all charts
 
 ## Using the Helm Repository
 
@@ -44,6 +51,16 @@ Each chart includes its own documentation in its respective directory:
 - [React Chart](./react/README.md)
 - [WordPress Bedrock Chart](./wordpress-bedrock/README.md)
 - [Yii2 Chart](./yii2/README.md)
+
+## Redis Configuration
+
+All charts now use a centralized Redis configuration from the common chart. To enable Redis in any chart, set the following in your values.yaml or with --set:
+
+```yaml
+redis:
+  enabled: true
+  # Other Redis configuration options...
+```
 
 ## GitHub Actions Workflow
 

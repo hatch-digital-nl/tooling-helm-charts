@@ -1,11 +1,11 @@
+{{- define "common.redis.pvc" -}}
 {{- if and .Values.redis.enabled .Values.redis.persistence.enabled }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "wordpress-bedrock.fullname" . }}-redis
+  name: {{ include "common.redis.name" . }}
   labels:
-    {{- include "wordpress-bedrock.labels" . | nindent 4 }}
-    app.kubernetes.io/component: redis
+    {{- include "common.redis.labels" . }}
 spec:
   accessModes:
     - ReadWriteOnce
@@ -13,3 +13,4 @@ spec:
     requests:
       storage: {{ .Values.redis.persistence.size }}
 {{- end }}
+{{- end -}}
