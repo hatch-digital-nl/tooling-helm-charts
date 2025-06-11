@@ -30,12 +30,23 @@ jobs:
           mkdir -p .cr-release-packages
           mkdir -p .cr-index
 
+      - name: Update Helm Dependencies
+        run: |
+          # First package the common chart
+          helm package common -d /tmp
+          
+          # Create charts directory for each chart if it doesn't exist
+          for chart in laravel react wordpress-bedrock yii2; do
+            mkdir -p $chart/charts
+            cp /tmp/common-*.tgz $chart/charts/
+          done
+
       - name: Package Helm Charts
         run: |
           for chart in */; do
             if [ -f "${chart}Chart.yaml" ]; then
               echo "Packaging chart: ${chart}"
-              helm package "${chart}" -d .cr-release-packages
+              helm package "${chart}" -d ../.cr-release-packages
             fi
           done
 
