@@ -30,28 +30,42 @@ jobs:
           mkdir -p .cr-release-packages
           mkdir -p .cr-index
 
-      - name: Update Helm Dependencies
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+          path: gh-pages
+          fetch-depth: 1
+          if-exists: true
+
+      - name: Copy existing packages
+        run: |
+          if [ -d "gh-pages" ]; then
+            echo "Copying existing packages"
+            # Copy all tgz files except index.yaml
+            find gh-pages -name "*.tgz" -exec cp {} .cr-release-packages/ \;
+          fi
+
+      - name: Package and Update Charts
         run: |
           # First package the common chart
-          helm package common -d /tmp
+          echo "Packaging common chart"
+          helm package common -d .cr-release-packages
           
-          # Create charts directory for each chart if it doesn't exist
+          # Create charts directory for each chart and copy common chart
           for chart in laravel react wordpress-bedrock yii2; do
+            echo "Setting up dependencies for $chart"
             mkdir -p $chart/charts
-            cp /tmp/common-*.tgz $chart/charts/
-          done
-
-      - name: Package Helm Charts
-        run: |
-          for chart in */; do
-            if [ -f "${chart}Chart.yaml" ]; then
-              echo "Packaging chart: ${chart}"
-              helm package "${chart}" -d ../.cr-release-packages
-            fi
+            cp .cr-release-packages/common-*.tgz $chart/charts/
+            
+            # Package the chart
+            echo "Packaging $chart chart"
+            helm package $chart -d .cr-release-packages
           done
 
       - name: Create/Update Helm Repository Index
         run: |
+          echo "Creating new index.yaml"
           helm repo index .cr-release-packages --url https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
           cp .cr-release-packages/index.yaml .cr-index/
 
