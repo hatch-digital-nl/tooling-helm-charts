@@ -2,7 +2,7 @@ apiVersion: v2
 name: yii2
 description: A Helm chart for Yii2 PHP Framework applications
 type: application
-version: 0.3.0
+version: 0.4.0
 appVersion: "1.0.0"
 keywords:
   - yii2

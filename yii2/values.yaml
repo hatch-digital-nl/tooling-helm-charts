@@ -77,23 +77,23 @@ resources:
 ## Probe settings
 probes:
   liveness:
-    enabled: true
+    enabled: false
     initialDelaySeconds: 30
     periodSeconds: 10
     timeoutSeconds: 5
     failureThreshold: 6
     successThreshold: 1
     path: /
-    port: 80
+    port: 8080
   readiness:
-    enabled: true
+    enabled: false
     initialDelaySeconds: 10
     periodSeconds: 10
     timeoutSeconds: 5
     failureThreshold: 6
     successThreshold: 1
     path: /
-    port: 80
+    port: 8080
   startup:
     enabled: false
     initialDelaySeconds: 60
@@ -102,7 +102,7 @@ probes:
     failureThreshold: 30
     successThreshold: 1
     path: /
-    port: 80
+    port: 8080
 
 ## Autoscaling settings
 autoscaling:
