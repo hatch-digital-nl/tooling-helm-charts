@@ -2,25 +2,20 @@
 nameOverride: ""
 fullnameOverride: ""
 
-## Image settings
+## Nginx image
 nginxImage:
-  repository: registry.scaleway.com/unframed/nginx
-  tag: "stable-alpine"
+  repository: rg.nl-ams.scw.cloud/unframed-container-registry/nginx
+  tag: "latest"
   pullPolicy: IfNotPresent
 
 ## Data container for application files
 dataImage:
-  repository: registry.scaleway.com/unframed/react-data
+  repository: rg.nl-ams.scw.cloud/unframed-container-registry/dummy_page
   tag: "latest"
   pullPolicy: IfNotPresent
 
 ## Application settings
 react:
-  env:
-    NODE_ENV: production
-    API_URL: https://api.example.com
-  
-  # React specific settings
   config:
     webRoot: "/var/www/html"
 
@@ -34,7 +29,7 @@ replicaCount: 1
 ## Service settings
 service:
   type: ClusterIP
-  port: 80
+  port: 8080
 
 ## Ingress settings
 ingress:
@@ -57,29 +52,6 @@ resources:
     requests:
       cpu: 100m
       memory: 128Mi
-
-## Redis cache settings
-redis:
-  enabled: false
-  image:
-    repository: redis
-    tag: "7.0-alpine"
-    pullPolicy: IfNotPresent
-  auth:
-    enabled: false
-    password: ""
-  persistence:
-    enabled: false
-    size: 1Gi
-  resources:
-    requests:
-      cpu: 100m
-      memory: 128Mi
-  service:
-    port: 6379
-  config:
-    maxmemory: "100mb"
-    maxmemoryPolicy: "allkeys-lru"
 
 ## Pod settings
 podAnnotations: {}
