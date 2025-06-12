@@ -57,7 +57,7 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             - |
-              cd /var/www/html && php yii {{ .name }}/listen
+              cd /var/www/html && php yii {{ .name }}/listen -v
           env:
             {{- include "yii2.env" $ | nindent 12 }}
           volumeMounts:
