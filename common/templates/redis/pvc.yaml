@@ -12,5 +12,6 @@ spec:
   resources:
     requests:
       storage: {{ .Values.redis.persistence.size }}
+---
 {{- end }}
 {{- end -}}

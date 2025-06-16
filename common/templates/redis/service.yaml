@@ -15,5 +15,6 @@ spec:
       name: redis
   selector:
     {{- include "common.redis.selectorLabels" . }}
+---
 {{- end }}
 {{- end -}}
