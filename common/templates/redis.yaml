@@ -1,19 +1,16 @@
-{{/*
-Redis templates for common chart
-*/}}
-
 {{- define "common.redis" -}}
 {{- $redisContext := dict "Values" .Values "fullname" .fullname "labels" .labels "selectorLabels" .selectorLabels -}}
 
-{{/* Include Redis deployment */}}
+{{/* Include Redis Deployment */}}
 {{- include "common.redis.deployment" $redisContext }}
 
 {{/* Include Redis PVC */}}
 {{- include "common.redis.pvc" $redisContext }}
 
-{{/* Include Redis service */}}
+{{/* Include Redis Secret */}}
+{{- include "common.redis.secret" $redisContext }}
+
+{{/* Include Redis Service */}}
 {{- include "common.redis.service" $redisContext }}
 
-{{/* Include Redis secret */}}
-{{- include "common.redis.secret" $redisContext }}
 {{- end -}}

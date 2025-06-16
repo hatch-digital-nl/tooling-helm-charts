@@ -2,7 +2,7 @@ apiVersion: v2
 name: wordpress-bedrock
 description: A Helm chart for WordPress based on Bedrock structure
 type: application
-version: 0.17.0
+version: 0.18.0
 keywords:
   - wordpress
   - cms
@@ -11,4 +11,4 @@ maintainers:
 dependencies:
   - name: common
     version: 0.1.0
-    repository: https://unframed-nl.github.io/helm_charts
+    repository: "file://../common"
