@@ -1,0 +1,85 @@
+{{- if .Values.queueWorkers.enabled }}
+{{- range .Values.queueWorkers.workers }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "laravel.fullname" $ }}-worker-{{ .name }}
+  labels:
+    {{- include "laravel.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: worker
+    worker.laravel.io/name: {{ .name }}
+spec:
+  replicas: {{ .replicas | default 1 }}
+  selector:
+    matchLabels:
+      {{- include "laravel.selectorLabels" $ | nindent 6 }}
+      app.kubernetes.io/component: worker
+      worker.laravel.io/name: {{ .name }}
+  template:
+    metadata:
+      labels:
+        {{- include "laravel.selectorLabels" $ | nindent 8 }}
+        app.kubernetes.io/component: worker
+        worker.laravel.io/name: {{ .name }}
+    spec:
+      {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
+      volumes:
+        - name: {{ $.Values.sharedVolume.name }}
+          emptyDir: {}
+      initContainers:
+        - name: data-container
+          securityContext:
+            {{- toYaml $.Values.securityContext | nindent 12 }}
+          image: "{{ $.Values.dataImage.repository }}:{{ $.Values.dataImage.tag | default "latest" }}"
+          imagePullPolicy: {{ $.Values.dataImage.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Copying Laravel application files to shared volume..."
+              cp -r /app/. /data/
+          volumeMounts:
+            - name: {{ $.Values.sharedVolume.name }}
+              mountPath: /data
+          resources:
+            {{- toYaml $.Values.resources.init | nindent 12 }}
+      containers:
+        - name: worker
+          securityContext:
+            {{- toYaml $.Values.securityContext | nindent 12 }}
+          image: "{{ $.Values.phpImage.repository }}:{{ $.Values.phpImage.tag | default "latest" }}"
+          imagePullPolicy: {{ $.Values.phpImage.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              cd /var/www/html && php artisan queue:work {{ .connection | default "default" }} --queue={{ .queue | default "default" }} --tries={{ .tries | default 3 }} --sleep={{ .sleep | default 3 }} --timeout={{ .timeout | default 60 }} --memory={{ .memory | default 128 }}
+          env:
+            {{- include "laravel.env" $ | nindent 12 }}
+          volumeMounts:
+            - name: {{ $.Values.sharedVolume.name }}
+              mountPath: /var/www/html
+          resources:
+            {{- if .resources }}
+            {{- toYaml .resources | nindent 12 }}
+            {{- else }}
+            {{- toYaml $.Values.resources.php | nindent 12 }}
+            {{- end }}
+      {{- with $.Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
+{{- end }}

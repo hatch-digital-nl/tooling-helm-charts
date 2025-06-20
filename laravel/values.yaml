@@ -60,7 +60,7 @@ replicaCount: 1
 ## Service settings
 service:
   type: ClusterIP
-  port: 80
+  port: 8080
 
 ## Ingress settings
 ingress:
@@ -90,6 +90,48 @@ resources:
     requests:
       cpu: 100m
       memory: 128Mi
+  init:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+
+## Probe settings
+probes:
+  liveness:
+    enabled: false
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
+    path: /
+    port: 8080
+  readiness:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
+    path: /
+    port: 8080
+  startup:
+    enabled: false
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 30
+    successThreshold: 1
+    path: /
+    port: 8080
+
+## Autoscaling settings
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
 
 ## MySQL database settings
 mysql:
@@ -126,6 +168,59 @@ redis:
   config:
     maxmemory: "100mb"
     maxmemoryPolicy: "allkeys-lru"
+
+## Queue workers configuration
+## Each worker runs "php artisan queue:work" in a PHP container
+queueWorkers:
+  enabled: false
+  # List of queue workers to deploy
+  workers: []
+  # - name: default       # Worker name
+  #   replicas: 1         # Number of worker replicas
+  #   connection: redis   # Queue connection to use (default: default)
+  #   queue: default      # Queue to process (default: default)
+  #   tries: 3            # Number of times to attempt a job before logging it failed (default: 3)
+  #   timeout: 60         # The number of seconds a child process can run (default: 60)
+  #   sleep: 3            # Number of seconds to sleep when no job is available (default: 3)
+  #   memory: 128         # The memory limit in megabytes (default: 128)
+  #   resources:          # Optional resource limits and requests
+  #     limits:
+  #       cpu: 500m
+  #       memory: 512Mi
+  #     requests:
+  #       cpu: 100m
+  #       memory: 128Mi
+
+## Cron jobs configuration
+cronJobs:
+  enabled: false
+  # Enable Laravel's scheduler (runs every minute)
+  scheduler: true
+  # List of additional cron jobs to deploy
+  jobs: []
+  # - name: example-cron        # Cron job name
+  #   schedule: "0 * * * *"     # Cron schedule expression (hourly)
+  #   command: "php artisan example:command"  # Command to run
+  #   resources:                # Optional resource limits and requests
+  #     limits:
+  #       cpu: 500m
+  #       memory: 512Mi
+  #     requests:
+  #       cpu: 100m
+  #       memory: 128Mi
+
+## Secret mounts configuration
+## Reference existing secrets and mount their keys as environment variables
+secretMounts: []
+# - secretName: "laravel-db-credentials"
+#   keys:
+#     # Simple key (no renaming)
+#     - "DB_USERNAME"
+#     - "DB_PASSWORD"
+#     - "DB_HOST"
+#     # Key with renaming (from -> to)
+#     - from: "DB_DATABASE"
+#       to: "DB_NAME"
 
 ## Pod settings
 podAnnotations: {}

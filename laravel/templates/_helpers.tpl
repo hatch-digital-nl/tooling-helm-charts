@@ -49,3 +49,45 @@ Selector labels
 app.kubernetes.io/name: {{ include "laravel.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+{{/*
+Laravel environment variables
+*/}}
+{{- define "laravel.env" -}}
+{{- range $key, $value := .Values.laravel.env }}
+- name: {{ $key }}
+  value: {{ $value | quote }}
+{{- end }}
+{{- if .Values.secretMounts }}
+{{- range .Values.secretMounts }}
+{{- range .keys }}
+{{- if kindIs "string" . }}
+- name: {{ . }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ $.secretName }}
+      key: {{ . }}
+{{- else }}
+- name: {{ .to }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ $.secretName }}
+      key: {{ .from }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- if .Values.redis.enabled }}
+- name: REDIS_HOST
+  value: {{ include "laravel.fullname" . }}-redis
+- name: REDIS_PORT
+  value: {{ .Values.redis.service.port | quote }}
+{{- if .Values.redis.auth.enabled }}
+- name: REDIS_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "laravel.fullname" . }}-redis
+      key: redis-password
+{{- end }}
+{{- end }}
+{{- end }}
