@@ -1,0 +1,81 @@
+{{- if .Values.migrationJob.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "laravel.fullname" . }}-migration
+  labels:
+    {{- include "laravel.labels" . | nindent 4 }}
+    app.kubernetes.io/component: migration
+  {{- if .Values.migrationJob.hook.enabled }}
+  annotations:
+    argocd.argoproj.io/hook: {{ .Values.migrationJob.hook.phase }}
+    argocd.argoproj.io/hook-delete-policy: {{ .Values.migrationJob.hook.deletePolicy }}
+  {{- end }}
+spec:
+  backoffLimit: {{ .Values.migrationJob.backoffLimit }}
+  activeDeadlineSeconds: {{ .Values.migrationJob.activeDeadlineSeconds }}
+  template:
+    metadata:
+      labels:
+        {{- include "laravel.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: migration
+    spec:
+      restartPolicy: {{ .Values.migrationJob.restartPolicy }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+        - name: {{ .Values.sharedVolume.name }}
+          emptyDir: {}
+      initContainers:
+        - name: data-container
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.dataImage.repository }}:{{ .Values.dataImage.tag | default "latest" }}"
+          imagePullPolicy: {{ .Values.dataImage.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Copying Laravel application files to shared volume..."
+              cp -r /app/. /data/
+          volumeMounts:
+            - name: {{ .Values.sharedVolume.name }}
+              mountPath: /data
+          resources:
+            {{- toYaml .Values.resources.init | nindent 12 }}
+      containers:
+        - name: migration
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.phpImage.repository }}:{{ .Values.phpImage.tag | default "latest" }}"
+          imagePullPolicy: {{ .Values.phpImage.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Starting Laravel migration..."
+              cd /var/www/html
+              {{ .Values.migrationJob.command }}
+              echo "Migration completed successfully"
+          env:
+            {{- include "laravel.env" . | nindent 12 }}
+          volumeMounts:
+            - name: {{ .Values.sharedVolume.name }}
+              mountPath: /var/www/html
+          resources:
+            {{- toYaml .Values.migrationJob.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

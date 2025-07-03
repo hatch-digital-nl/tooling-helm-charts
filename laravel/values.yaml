@@ -4,46 +4,38 @@ fullnameOverride: ""
 
 ## Image settings
 phpImage:
-  repository: registry.scaleway.com/unframed/php
-  tag: "8.1-fpm"
-  pullPolicy: IfNotPresent
+  repository: rg.nl-ams.scw.cloud/unframed-container-registry/php
+  tag: "8.3"
+  pullPolicy: Always
 
-## Nginx image for serving Laravel
+## Nginx image for serving WordPress
 nginxImage:
-  repository: registry.scaleway.com/unframed/nginx
-  tag: "stable-alpine"
-  pullPolicy: IfNotPresent
+  repository: rg.nl-ams.scw.cloud/unframed-container-registry/nginx
+  tag: "latest"
+  pullPolicy: Always
 
 ## Data container for application files
 dataImage:
-  repository: registry.scaleway.com/unframed/laravel-data
+  repository: rg.nl-ams.scw.cloud/unframed-container-registry/dummy_page
   tag: "latest"
   pullPolicy: IfNotPresent
+
 
 ## Application settings
 laravel:
   env:
-    APP_NAME: Laravel
     APP_ENV: production
-    APP_KEY: ""
     APP_DEBUG: "false"
-    APP_URL: https://example.com
-    
+
     LOG_CHANNEL: stack
     LOG_LEVEL: debug
     
-    DB_CONNECTION: mysql
-    DB_HOST: mysql
-    DB_PORT: 3306
-    DB_DATABASE: laravel
-    DB_USERNAME: laravel
-    DB_PASSWORD: ""
-    
+    DB_CONNECTION: mysql  
     BROADCAST_DRIVER: log
-    CACHE_DRIVER: file
+    CACHE_DRIVER: database
     FILESYSTEM_DISK: local
-    QUEUE_CONNECTION: sync
-    SESSION_DRIVER: file
+    QUEUE_CONNECTION: database
+    SESSION_DRIVER: database
     SESSION_LIFETIME: 120
   
   # Laravel specific settings
@@ -174,26 +166,52 @@ redis:
 queueWorkers:
   enabled: false
   # List of queue workers to deploy
-  workers: []
-  # - name: default       # Worker name
-  #   replicas: 1         # Number of worker replicas
-  #   connection: redis   # Queue connection to use (default: default)
-  #   queue: default      # Queue to process (default: default)
-  #   tries: 3            # Number of times to attempt a job before logging it failed (default: 3)
-  #   timeout: 60         # The number of seconds a child process can run (default: 60)
-  #   sleep: 3            # Number of seconds to sleep when no job is available (default: 3)
-  #   memory: 128         # The memory limit in megabytes (default: 128)
-  #   resources:          # Optional resource limits and requests
-  #     limits:
-  #       cpu: 500m
-  #       memory: 512Mi
-  #     requests:
-  #       cpu: 100m
-  #       memory: 128Mi
+  workers:
+    - name: default       # Worker name
+      replicas: 1         # Number of worker replicas
+      connection: database # Queue connection to use (default: default)
+      queue: default      # Queue to process (default: default)
+      tries: 3            # Number of times to attempt a job before logging it failed (default: 3)
+      timeout: 60         # The number of seconds a child process can run (default: 60)
+      sleep: 3            # Number of seconds to sleep when no job is available (default: 3)
+      memory: 128         # The memory limit in megabytes (default: 128)
+      resources:          # Optional resource limits and requests
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+
+## Migration job configuration
+## Runs Laravel migrations before deployment using ArgoCD PreSync hooks
+migrationJob:
+  enabled: true
+  # ArgoCD hook configuration
+  hook:
+    enabled: true
+    # Hook phase - PreSync runs before the main deployment
+    phase: PreSync
+    # Delete policy - what to do with the job after completion
+    deletePolicy: BeforeHookCreation
+  # Migration command to run
+  command: "php artisan migrate --force"
+  # Resource limits and requests for the migration job
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  # Job settings
+  backoffLimit: 3
+  activeDeadlineSeconds: 600
+  restartPolicy: Never
 
 ## Cron jobs configuration
 cronJobs:
-  enabled: false
+  enabled: true
   # Enable Laravel's scheduler (runs every minute)
   scheduler: true
   # List of additional cron jobs to deploy

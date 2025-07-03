@@ -1,201 +1,117 @@
 # Laravel Helm Chart
 
-This Helm chart deploys a Laravel application on Kubernetes.
+This Helm chart deploys a Laravel application with PHP-FPM, Nginx, MySQL, and optional Redis support.
 
-## Introduction
+## Features
 
-This chart bootstraps a Laravel application deployment on a Kubernetes cluster using the Helm package manager.
+- **Laravel Application**: PHP-FPM container with Laravel application
+- **Web Server**: Nginx container for serving static files and proxying PHP requests
+- **Database**: MySQL database with persistent storage
+- **Cache**: Optional Redis cache
+- **Queue Workers**: Optional Laravel queue workers
+- **Cron Jobs**: Laravel scheduler and custom cron jobs
+- **Migration Job**: Automated database migrations with ArgoCD PreSync hooks
 
-## Prerequisites
+## Migration Job
 
-- Kubernetes 1.19+
-- Helm 3.2.0+
+The chart includes an automated migration job that runs Laravel database migrations before the main application deployment. This is particularly useful when using ArgoCD for GitOps deployments.
 
-## Installing the Chart
+### ArgoCD Integration
 
-To install the chart with the release name `my-release`:
+The migration job uses ArgoCD hooks to ensure migrations run at the correct time:
+
+```yaml
+migrationJob:
+  enabled: true
+  hook:
+    enabled: true
+    phase: PreSync  # Runs before the main deployment
+    deletePolicy: BeforeHookCreation  # Cleans up previous migration jobs
+```
+
+### Configuration
+
+You can configure the migration job in your `values.yaml`:
+
+```yaml
+migrationJob:
+  enabled: true
+  hook:
+    enabled: true
+    phase: PreSync
+    deletePolicy: BeforeHookCreation
+  command: "php artisan migrate --force"
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  backoffLimit: 3
+  activeDeadlineSeconds: 600
+  restartPolicy: Never
+```
+
+### How it works
+
+1. **PreSync Phase**: When ArgoCD starts a sync, the migration job runs first
+2. **Application Files**: The job copies Laravel application files from the data container
+3. **Database Connection**: Uses the same database configuration as the main application
+4. **Migration Execution**: Runs `php artisan migrate --force` (or custom command)
+5. **Cleanup**: ArgoCD removes the job after completion based on the delete policy
+
+### Customizing Migration Commands
+
+You can customize the migration command:
+
+```yaml
+migrationJob:
+  command: "php artisan migrate --force && php artisan db:seed --force"
+```
+
+Or run multiple commands:
+
+```yaml
+migrationJob:
+  command: |
+    php artisan migrate --force
+    php artisan cache:clear
+    php artisan config:cache
+```
+
+### Disabling the Migration Job
+
+To disable the migration job:
+
+```yaml
+migrationJob:
+  enabled: false
+```
+
+### Disabling ArgoCD Hooks
+
+If you're not using ArgoCD, you can disable the hooks and the job will run as a regular Kubernetes Job:
+
+```yaml
+migrationJob:
+  enabled: true
+  hook:
+    enabled: false
+```
+
+## Installation
 
 ```bash
-$ helm install my-release ./laravel
+helm install my-laravel-app ./laravel
 ```
 
 ## Configuration
 
-The following table lists the configurable parameters of the Laravel chart and their default values.
+See `values.yaml` for all available configuration options.
 
-### Global Settings
+## Requirements
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `nameOverride` | Override the name of the chart | `""` |
-| `fullnameOverride` | Override the full name of the chart | `""` |
-
-### Image Settings
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `phpImage.repository` | PHP image repository | `registry.scaleway.com/unframed/php` |
-| `phpImage.tag` | PHP image tag | `"8.1-fpm"` |
-| `phpImage.pullPolicy` | PHP image pull policy | `IfNotPresent` |
-| `nginxImage.repository` | Nginx image repository | `registry.scaleway.com/unframed/nginx` |
-| `nginxImage.tag` | Nginx image tag | `"stable-alpine"` |
-| `nginxImage.pullPolicy` | Nginx image pull policy | `IfNotPresent` |
-| `dataImage.repository` | Data container image repository | `registry.scaleway.com/unframed/laravel-data` |
-| `dataImage.tag` | Data container image tag | `"latest"` |
-| `dataImage.pullPolicy` | Data container image pull policy | `IfNotPresent` |
-
-### Application Settings
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `laravel.env.APP_NAME` | Laravel application name | `Laravel` |
-| `laravel.env.APP_ENV` | Laravel environment | `production` |
-| `laravel.env.APP_KEY` | Laravel application key | `""` |
-| `laravel.env.APP_DEBUG` | Enable Laravel debug mode | `"false"` |
-| `laravel.env.APP_URL` | Laravel application URL | `https://example.com` |
-| `laravel.config.webRoot` | Web root directory | `"/var/www/html/public"` |
-
-### Service Settings
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `service.type` | Service type | `ClusterIP` |
-| `service.port` | Service port | `8080` |
-
-### Queue Workers
-
-The chart supports deploying Laravel queue workers that run `php artisan queue:work` commands.
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `queueWorkers.enabled` | Enable queue workers | `false` |
-| `queueWorkers.workers` | List of queue workers to deploy | `[]` |
-
-Example configuration for queue workers:
-
-```yaml
-queueWorkers:
-  enabled: true
-  workers:
-    - name: default       # Worker name
-      replicas: 2         # Number of worker replicas
-      connection: redis   # Queue connection to use (default: default)
-      queue: default      # Queue to process (default: default)
-      tries: 3            # Number of times to attempt a job before logging it failed (default: 3)
-      timeout: 60         # The number of seconds a child process can run (default: 60)
-      sleep: 3            # Number of seconds to sleep when no job is available (default: 3)
-      memory: 128         # The memory limit in megabytes (default: 128)
-      resources:          # Optional resource limits and requests
-        limits:
-          cpu: 500m
-          memory: 512Mi
-        requests:
-          cpu: 100m
-          memory: 128Mi
-    - name: emails
-      replicas: 1
-      queue: emails
-```
-
-### Cron Jobs
-
-The chart supports deploying Kubernetes CronJobs for scheduled tasks, including Laravel's scheduler.
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `cronJobs.enabled` | Enable cron jobs | `false` |
-| `cronJobs.scheduler` | Enable Laravel's scheduler | `true` |
-| `cronJobs.jobs` | List of cron jobs to deploy | `[]` |
-
-Example configuration for cron jobs:
-
-```yaml
-cronJobs:
-  enabled: true
-  scheduler: true  # Enables Laravel's scheduler (runs every minute)
-  jobs:
-    - name: cleanup        # Cron job name
-      schedule: "0 0 * * *"   # Cron schedule expression (daily at midnight)
-      command: "php artisan cleanup:run"  # Command to run
-      resources:                # Optional resource limits and requests
-        limits:
-          cpu: 500m
-          memory: 512Mi
-        requests:
-          cpu: 100m
-          memory: 128Mi
-    - name: send-reports
-      schedule: "0 7 * * 1"  # Every Monday at 7 AM
-      command: "php artisan reports:send-weekly"
-```
-
-### Redis Settings
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `redis.enabled` | Enable Redis | `false` |
-| `redis.image.repository` | Redis image repository | `redis` |
-| `redis.image.tag` | Redis image tag | `"7.0-alpine"` |
-| `redis.auth.enabled` | Enable Redis authentication | `false` |
-| `redis.auth.password` | Redis password | `""` |
-| `redis.persistence.enabled` | Enable Redis persistence | `false` |
-| `redis.persistence.size` | Redis persistence size | `1Gi` |
-
-### MySQL Settings
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `mysql.enabled` | Enable MySQL | `true` |
-| `mysql.auth.database` | MySQL database name | `laravel` |
-| `mysql.auth.username` | MySQL username | `laravel` |
-| `mysql.auth.password` | MySQL password | `""` |
-| `mysql.auth.rootPassword` | MySQL root password | `""` |
-| `mysql.primary.persistence.enabled` | Enable MySQL persistence | `true` |
-| `mysql.primary.persistence.size` | MySQL persistence size | `8Gi` |
-
-## Secret Mounts
-
-The chart supports mounting existing secrets as environment variables.
-
-Example configuration:
-
-```yaml
-secretMounts:
-  - secretName: "laravel-db-credentials"
-    keys:
-      # Simple key (no renaming)
-      - "DB_USERNAME"
-      - "DB_PASSWORD"
-      - "DB_HOST"
-      # Key with renaming (from -> to)
-      - from: "DB_DATABASE"
-        to: "DB_NAME"
-```
-
-## Probes
-
-The chart supports configuring liveness, readiness, and startup probes for the application.
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `probes.liveness.enabled` | Enable liveness probe | `false` |
-| `probes.liveness.path` | Path for liveness probe | `/` |
-| `probes.liveness.port` | Port for liveness probe | `8080` |
-| `probes.readiness.enabled` | Enable readiness probe | `false` |
-| `probes.readiness.path` | Path for readiness probe | `/` |
-| `probes.readiness.port` | Port for readiness probe | `8080` |
-| `probes.startup.enabled` | Enable startup probe | `false` |
-| `probes.startup.path` | Path for startup probe | `/` |
-| `probes.startup.port` | Port for startup probe | `8080` |
-
-## Autoscaling
-
-The chart supports horizontal pod autoscaling.
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `autoscaling.enabled` | Enable autoscaling | `false` |
-| `autoscaling.minReplicas` | Minimum number of replicas | `1` |
-| `autoscaling.maxReplicas` | Maximum number of replicas | `5` |
-| `autoscaling.targetCPUUtilizationPercentage` | Target CPU utilization percentage | `80` |
-| `autoscaling.targetMemoryUtilizationPercentage` | Target memory utilization percentage | `80` |
+- Kubernetes 1.19+
+- Helm 3.0+
+- ArgoCD (optional, for hook functionality)
