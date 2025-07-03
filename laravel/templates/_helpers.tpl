@@ -93,3 +93,15 @@ Laravel environment variables
 {{- end }}
 {{- end }}
 {{- end }}
+
+{{/*
+Laravel envFrom for complete secrets
+*/}}
+{{- define "laravel.envFrom" -}}
+{{- if .Values.secretRefs }}
+{{- range .Values.secretRefs }}
+- secretRef:
+    name: {{ . }}
+{{- end }}
+{{- end }}
+{{- end }}

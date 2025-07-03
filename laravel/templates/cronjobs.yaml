@@ -59,6 +59,10 @@ spec:
                   cd /var/www/html && php artisan schedule:run
               env:
                 {{- include "laravel.env" . | nindent 16 }}
+              {{- if .Values.secretRefs }}
+              envFrom:
+                {{- include "laravel.envFrom" . | nindent 16 }}
+              {{- end }}
               volumeMounts:
                 - name: {{ .Values.sharedVolume.name }}
                   mountPath: /var/www/html
@@ -140,6 +144,10 @@ spec:
                   cd /var/www/html && {{ .command }}
               env:
                 {{- include "laravel.env" $ | nindent 16 }}
+              {{- if $.Values.secretRefs }}
+              envFrom:
+                {{- include "laravel.envFrom" $ | nindent 16 }}
+              {{- end }}
               volumeMounts:
                 - name: {{ $.Values.sharedVolume.name }}
                   mountPath: /var/www/html

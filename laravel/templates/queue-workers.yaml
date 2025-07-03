@@ -60,6 +60,10 @@ spec:
               cd /var/www/html && php artisan queue:work {{ .connection | default "default" }} --queue={{ .queue | default "default" }} --tries={{ .tries | default 3 }} --sleep={{ .sleep | default 3 }} --timeout={{ .timeout | default 60 }} --memory={{ .memory | default 128 }}
           env:
             {{- include "laravel.env" $ | nindent 12 }}
+          {{- if $.Values.secretRefs }}
+          envFrom:
+            {{- include "laravel.envFrom" $ | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: {{ $.Values.sharedVolume.name }}
               mountPath: /var/www/html

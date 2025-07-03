@@ -240,6 +240,12 @@ secretMounts: []
 #     - from: "DB_DATABASE"
 #       to: "DB_NAME"
 
+## Secret references configuration
+## Reference complete secrets as envFrom to load all keys as environment variables
+secretRefs: []
+# - "laravel-app-secrets"
+# - "laravel-external-api-keys"
+
 ## Pod settings
 podAnnotations: {}
 podSecurityContext:
