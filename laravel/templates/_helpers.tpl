@@ -59,20 +59,22 @@ Laravel environment variables
   value: {{ $value | quote }}
 {{- end }}
 {{- if .Values.secretMounts }}
-{{- range .Values.secretMounts }}
-{{- range .keys }}
-{{- if kindIs "string" . }}
-- name: {{ . }}
+{{- range $secretConfig := .Values.secretMounts }}
+{{- if $secretConfig.secretName }}
+{{- range $keyMapping := $secretConfig.keys }}
+{{- if kindIs "string" $keyMapping }}
+- name: {{ $keyMapping }}
   valueFrom:
     secretKeyRef:
-      name: {{ $.secretName }}
-      key: {{ . }}
+      name: {{ $secretConfig.secretName }}
+      key: {{ $keyMapping }}
 {{- else }}
-- name: {{ .to }}
+- name: {{ $keyMapping.to }}
   valueFrom:
     secretKeyRef:
-      name: {{ $.secretName }}
-      key: {{ .from }}
+      name: {{ $secretConfig.secretName }}
+      key: {{ $keyMapping.from }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
