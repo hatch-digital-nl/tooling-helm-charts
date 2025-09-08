@@ -292,14 +292,14 @@ class HelmChartsApp {
     }
 
     renderChartCard(chart) {
-        const keywords = chart.keywords.map(keyword => 
+        const keywords = chart.keywords.map(keyword =>
             `<span class="chart-card__keyword">${this.escapeHtml(keyword)}</span>`
         ).join('');
         
         const installCommand = `helm install my-${chart.name} my-repo/${chart.name}`;
         
         return `
-            <div class="chart-card">
+            <div class="chart-card" onclick="app.openValuesModal('${chart.name}', '${chart.version}')">
                 <div class="chart-card__header">
                     <h3 class="chart-card__name">${this.escapeHtml(chart.name)}</h3>
                     <span class="chart-card__version">v${this.escapeHtml(chart.version)}</span>
@@ -317,10 +317,14 @@ class HelmChartsApp {
                 <div class="chart-card__install">
                     <div class="chart-card__install-title">Installatie Commando:</div>
                     <code>${this.escapeHtml(installCommand)}</code>
-                    <button onclick="app.copyToClipboard('${installCommand}')" class="button button--small chart-card__copy">
+                    <button onclick="event.stopPropagation(); app.copyToClipboard('${installCommand}')" class="button button--small chart-card__copy">
                         Kopiëren
                     </button>
                 </div>
+                
+                <button onclick="event.stopPropagation(); app.openValuesModal('${chart.name}', '${chart.version}')" class="chart-card__view-values">
+                    📄 Bekijk values.yaml
+                </button>
             </div>
         `;
     }
@@ -452,6 +456,176 @@ class HelmChartsApp {
         document.getElementById('controls').style.display = 'block';
         document.getElementById('repo-info').style.display = 'block';
         document.getElementById('charts-container').style.display = 'block';
+    }
+
+    // Values.yaml modal functionality
+    async openValuesModal(chartName, chartVersion) {
+        this.currentChart = { name: chartName, version: chartVersion };
+        
+        const modal = document.getElementById('values-modal');
+        const modalTitle = document.getElementById('modal-title');
+        
+        modalTitle.textContent = `${chartName} v${chartVersion} - values.yaml`;
+        modal.style.display = 'flex';
+        
+        // Show loading state
+        this.showValuesLoading();
+        
+        try {
+            const valuesContent = await this.loadValuesYaml(chartName, chartVersion);
+            this.showValuesContent(valuesContent);
+        } catch (error) {
+            console.error('Error loading values.yaml:', error);
+            this.showValuesError(error.message);
+        }
+    }
+
+    closeValuesModal() {
+        const modal = document.getElementById('values-modal');
+        modal.style.display = 'none';
+        this.currentChart = null;
+    }
+
+    async loadValuesYaml(chartName, chartVersion) {
+        // Construct the URL to the chart tar.gz file
+        const chartUrl = `${this.repoUrl}/${chartName}-${chartVersion}.tgz`;
+        
+        console.log('Loading chart from:', chartUrl);
+        
+        // Download the tar.gz file
+        const response = await fetch(chartUrl);
+        if (!response.ok) {
+            throw new Error(`Failed to download chart: HTTP ${response.status}`);
+        }
+        
+        const arrayBuffer = await response.arrayBuffer();
+        
+        // Extract values.yaml from the tar.gz
+        const valuesContent = await this.extractValuesFromTarGz(arrayBuffer, chartName);
+        
+        return valuesContent;
+    }
+
+    async extractValuesFromTarGz(arrayBuffer, chartName) {
+        // Since we can't use native tar.gz extraction in the browser,
+        // we'll try multiple approaches to get the values.yaml
+        
+        // First, try to get values.yaml from local test files (for development)
+        try {
+            const localValuesUrl = `${window.location.origin}${window.location.pathname.replace('/index.html', '')}/${chartName}-values.yaml`;
+            console.log('Trying to fetch local values.yaml from:', localValuesUrl);
+            
+            const response = await fetch(localValuesUrl);
+            if (response.ok) {
+                return await response.text();
+            }
+        } catch (error) {
+            console.log('Could not fetch local values.yaml:', error);
+        }
+        
+        // Second, try to get values.yaml from the source repository
+        try {
+            const valuesUrl = `https://raw.githubusercontent.com/${this.getRepoOwner()}/${this.getRepoName()}/main/${chartName}/values.yaml`;
+            console.log('Trying to fetch values.yaml from source repository:', valuesUrl);
+            
+            const response = await fetch(valuesUrl);
+            if (response.ok) {
+                return await response.text();
+            }
+        } catch (error) {
+            console.log('Could not fetch from source repository:', error);
+        }
+        
+        // Third, try alternative GitHub raw URLs
+        try {
+            // Try with different repository structure
+            const altValuesUrl = `https://raw.githubusercontent.com/${this.getRepoOwner()}/helm_charts/main/${chartName}/values.yaml`;
+            console.log('Trying alternative GitHub URL:', altValuesUrl);
+            
+            const response = await fetch(altValuesUrl);
+            if (response.ok) {
+                return await response.text();
+            }
+        } catch (error) {
+            console.log('Could not fetch from alternative GitHub URL:', error);
+        }
+        
+        // If all methods fail, provide a helpful message with instructions
+        throw new Error(`Could not load values.yaml for ${chartName}.
+
+Possible solutions:
+1. For local development: Place a ${chartName}-values.yaml file in the docs directory
+2. For production: Ensure the chart source is available on GitHub
+3. The chart package extraction from tar.gz is not yet implemented
+
+This feature works best when the chart source code is accessible.`);
+    }
+
+    getRepoOwner() {
+        // Extract repository owner from the current URL or repo URL
+        const hostname = window.location.hostname;
+        if (hostname.includes('github.io')) {
+            return hostname.split('.')[0];
+        }
+        return 'your-username'; // fallback
+    }
+
+    getRepoName() {
+        // Extract repository name from the current URL
+        const pathname = window.location.pathname;
+        const pathParts = pathname.split('/').filter(part => part);
+        if (pathParts.length > 0) {
+            return pathParts[0];
+        }
+        return 'helm_charts'; // fallback
+    }
+
+    retryLoadValues() {
+        if (this.currentChart) {
+            this.openValuesModal(this.currentChart.name, this.currentChart.version);
+        }
+    }
+
+    showValuesLoading() {
+        document.getElementById('values-loading').style.display = 'flex';
+        document.getElementById('values-error').style.display = 'none';
+        document.getElementById('values-content').style.display = 'none';
+    }
+
+    showValuesError(message) {
+        document.getElementById('values-loading').style.display = 'none';
+        document.getElementById('values-error').style.display = 'flex';
+        document.getElementById('values-error-message').textContent = message;
+        document.getElementById('values-content').style.display = 'none';
+    }
+
+    showValuesContent(content) {
+        document.getElementById('values-loading').style.display = 'none';
+        document.getElementById('values-error').style.display = 'none';
+        document.getElementById('values-content').style.display = 'flex';
+        document.getElementById('values-yaml').textContent = content;
+        this.currentValuesContent = content;
+    }
+
+    copyValuesToClipboard() {
+        if (this.currentValuesContent) {
+            this.copyToClipboard(this.currentValuesContent);
+        }
+    }
+
+    downloadValues() {
+        if (this.currentValuesContent && this.currentChart) {
+            const blob = new Blob([this.currentValuesContent], { type: 'text/yaml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${this.currentChart.name}-values.yaml`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            this.showToast('Values.yaml gedownload!');
+        }
     }
 }
 

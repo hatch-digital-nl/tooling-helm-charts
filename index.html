@@ -82,6 +82,34 @@
         </div>
     </main>
 
+    <!-- Values.yaml Modal -->
+    <div id="values-modal" class="modal" style="display: none;">
+        <div class="modal__backdrop" onclick="app.closeValuesModal()"></div>
+        <div class="modal__content">
+            <div class="modal__header">
+                <h2 id="modal-title">Values.yaml</h2>
+                <button onclick="app.closeValuesModal()" class="modal__close">&times;</button>
+            </div>
+            <div class="modal__body">
+                <div id="values-loading" class="modal__loading">
+                    <div class="loading__spinner"></div>
+                    <p>Laden van values.yaml...</p>
+                </div>
+                <div id="values-error" class="modal__error" style="display: none;">
+                    <p id="values-error-message"></p>
+                    <button onclick="app.retryLoadValues()" class="button button--primary">Opnieuw proberen</button>
+                </div>
+                <div id="values-content" class="modal__values" style="display: none;">
+                    <div class="modal__actions">
+                        <button onclick="app.copyValuesToClipboard()" class="button button--small">Kopiëren</button>
+                        <button onclick="app.downloadValues()" class="button button--small">Downloaden</button>
+                    </div>
+                    <pre id="values-yaml" class="values-yaml"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer class="footer">
         <div class="container">
             <p>&copy; 2024 Helm Charts Repository. Automatisch gegenereerd van index.yaml</p>
