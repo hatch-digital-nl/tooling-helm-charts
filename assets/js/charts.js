@@ -42,7 +42,10 @@ class HelmChartsApp {
             }
             
             const yamlText = await response.text();
+            console.log('Raw YAML text:', yamlText.substring(0, 500) + '...');
+            
             const data = this.parseYaml(yamlText);
+            console.log('Parsed data:', data);
             
             this.processChartsData(data, baseUrl);
             this.renderCharts();
@@ -73,87 +76,175 @@ class HelmChartsApp {
     }
 
     parseYaml(yamlText) {
-        // Eenvoudige YAML parser voor index.yaml structuur
+        // Verbeterde YAML parser voor index.yaml structuur
         const lines = yamlText.split('\n');
         const data = { entries: {} };
         
         let currentChart = null;
         let currentVersion = null;
         let inEntries = false;
+        let currentKey = null;
+        let arrayMode = false;
+        let currentArray = [];
         
-        for (let line of lines) {
-            line = line.trim();
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            const trimmedLine = line.trim();
+            const indentLevel = line.length - line.trimStart().length;
             
-            if (line === 'entries:') {
+            // Skip empty lines and comments
+            if (!trimmedLine || trimmedLine.startsWith('#')) continue;
+            
+            if (trimmedLine === 'entries:') {
                 inEntries = true;
                 continue;
             }
             
             if (!inEntries) continue;
             
-            // Chart naam (geen leading spaces)
-            if (line.match(/^[a-zA-Z0-9-]+:$/) && !line.startsWith(' ')) {
-                currentChart = line.replace(':', '');
+            // Chart naam (2 spaces indent)
+            if (indentLevel === 2 && trimmedLine.endsWith(':')) {
+                currentChart = trimmedLine.replace(':', '');
                 data.entries[currentChart] = [];
+                currentVersion = null;
+                arrayMode = false;
                 continue;
             }
             
-            // Versie entry (2 spaces)
-            if (line.startsWith('- ') && currentChart) {
+            // Versie entry (4 spaces indent, starts with -)
+            if (indentLevel === 4 && trimmedLine.startsWith('- ') && currentChart) {
+                // Finish previous array if needed
+                if (arrayMode && currentKey && currentVersion) {
+                    currentVersion[currentKey] = currentArray;
+                    arrayMode = false;
+                }
+                
                 currentVersion = {};
                 data.entries[currentChart].push(currentVersion);
+                
+                // Parse inline properties after the dash
+                const inlineContent = trimmedLine.substring(2).trim();
+                if (inlineContent) {
+                    const match = inlineContent.match(/^([^:]+):\s*(.*)$/);
+                    if (match) {
+                        const key = match[1].trim();
+                        let value = match[2].trim();
+                        value = this.cleanYamlValue(value);
+                        currentVersion[key] = value;
+                    }
+                }
                 continue;
             }
             
-            // Eigenschappen (4+ spaces)
-            if (line.startsWith('  ') && currentVersion) {
-                const match = line.match(/^\s*([^:]+):\s*(.*)$/);
+            // Properties (6+ spaces indent)
+            if (indentLevel >= 6 && currentVersion) {
+                // Handle array continuation
+                if (arrayMode && trimmedLine.startsWith('- ')) {
+                    let arrayValue = trimmedLine.substring(2).trim();
+                    arrayValue = this.cleanYamlValue(arrayValue);
+                    currentArray.push(arrayValue);
+                    continue;
+                }
+                
+                // Finish previous array if starting new property
+                if (arrayMode && currentKey && trimmedLine.includes(':')) {
+                    currentVersion[currentKey] = currentArray;
+                    arrayMode = false;
+                }
+                
+                // Parse key-value pairs
+                const match = trimmedLine.match(/^([^:]+):\s*(.*)$/);
                 if (match) {
                     const key = match[1].trim();
                     let value = match[2].trim();
                     
-                    // Verwijder quotes
-                    if ((value.startsWith('"') && value.endsWith('"')) || 
-                        (value.startsWith("'") && value.endsWith("'"))) {
-                        value = value.slice(1, -1);
-                    }
+                    currentKey = key;
                     
-                    // Parse arrays (keywords)
-                    if (key === 'keywords' && value.startsWith('[') && value.endsWith(']')) {
-                        value = value.slice(1, -1).split(',').map(k => k.trim().replace(/['"]/g, ''));
+                    // Check if this starts an array
+                    if (!value || value === '') {
+                        // Look ahead to see if next line is an array item
+                        if (i + 1 < lines.length) {
+                            const nextLine = lines[i + 1];
+                            const nextTrimmed = nextLine.trim();
+                            const nextIndent = nextLine.length - nextLine.trimStart().length;
+                            
+                            if (nextIndent > indentLevel && nextTrimmed.startsWith('- ')) {
+                                arrayMode = true;
+                                currentArray = [];
+                                continue;
+                            }
+                        }
+                        currentVersion[key] = '';
+                    } else {
+                        value = this.cleanYamlValue(value);
+                        
+                        // Handle inline arrays
+                        if (value.startsWith('[') && value.endsWith(']')) {
+                            const arrayContent = value.slice(1, -1);
+                            if (arrayContent.trim()) {
+                                value = arrayContent.split(',').map(item => this.cleanYamlValue(item.trim()));
+                            } else {
+                                value = [];
+                            }
+                        }
+                        
+                        currentVersion[key] = value;
                     }
-                    
-                    currentVersion[key] = value;
                 }
             }
         }
         
+        // Finish any remaining array
+        if (arrayMode && currentKey && currentVersion) {
+            currentVersion[currentKey] = currentArray;
+        }
+        
         return data;
+    }
+
+    cleanYamlValue(value) {
+        if (!value) return '';
+        
+        // Remove surrounding quotes
+        if ((value.startsWith('"') && value.endsWith('"')) ||
+            (value.startsWith("'") && value.endsWith("'"))) {
+            value = value.slice(1, -1);
+        }
+        
+        return value;
     }
 
     processChartsData(data, baseUrl) {
         this.repoUrl = baseUrl;
         this.charts = [];
         
-        for (const [chartName, versions] of Object.entries(data.entries)) {
-            if (versions && versions.length > 0) {
+        console.log('Processing charts data:', data.entries);
+        
+        for (const [chartName, versions] of Object.entries(data.entries || {})) {
+            console.log(`Processing chart: ${chartName}`, versions);
+            
+            if (versions && Array.isArray(versions) && versions.length > 0) {
                 // Neem de nieuwste versie (eerste in de lijst)
                 const latestVersion = versions[0];
+                console.log(`Latest version for ${chartName}:`, latestVersion);
                 
                 const chart = {
                     name: chartName,
                     version: latestVersion.version || 'unknown',
                     appVersion: latestVersion.appVersion || 'N/A',
                     description: latestVersion.description || 'Geen beschrijving beschikbaar',
-                    keywords: latestVersion.keywords || [],
+                    keywords: Array.isArray(latestVersion.keywords) ? latestVersion.keywords : [],
                     created: latestVersion.created || '',
-                    urls: latestVersion.urls || [],
-                    maintainers: latestVersion.maintainers || []
+                    urls: Array.isArray(latestVersion.urls) ? latestVersion.urls : [],
+                    maintainers: Array.isArray(latestVersion.maintainers) ? latestVersion.maintainers : []
                 };
                 
+                console.log(`Processed chart:`, chart);
                 this.charts.push(chart);
             }
         }
+        
+        console.log('All processed charts:', this.charts);
         
         // Sorteer charts alfabetisch
         this.charts.sort((a, b) => a.name.localeCompare(b.name));
