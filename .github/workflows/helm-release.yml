@@ -90,3 +90,14 @@ jobs:
           git-config-email: ${{ github.actor }}@users.noreply.github.com
           commit-message: "Update Helm repository index"
           clean: false
+
+      - name: Publish Website
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: docs
+          target-folder: docs
+          branch: gh-pages
+          git-config-name: ${{ github.actor }}
+          git-config-email: ${{ github.actor }}@users.noreply.github.com
+          commit-message: "Update Helm charts website"
+          clean: false
