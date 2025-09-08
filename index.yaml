@@ -3,9 +3,9 @@ entries:
   common:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.65497845Z"
+    created: "2025-09-08T11:57:48.234908644Z"
     description: Common templates for Helm charts
-    digest: 292943907e8e5ba20b39da061a1842453e2d9309c25dff762d54d4db1454e901
+    digest: 3ac478d4ba8a8890018f17af202fd7da279cfae0ded4b2a79c1845ecda0c8447
     name: common
     type: application
     urls:
@@ -14,13 +14,13 @@ entries:
   laravel:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.661570885Z"
+    created: "2025-09-08T11:57:48.241578843Z"
     dependencies:
     - name: common
       repository: file://../common
       version: 0.1.0
     description: A Helm chart for Laravel PHP Framework applications
-    digest: 3214832cbfbea082af9308a5cc0405a8c272e57ebab5db39460a494f34c0808e
+    digest: ed2dbd36d09ec96d56fc96826a3582b437c3e92573d79749bd768aea5b6cac19
     keywords:
     - laravel
     - php
@@ -35,7 +35,7 @@ entries:
     version: 0.8.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.660577816Z"
+    created: "2025-09-08T11:57:48.240586189Z"
     dependencies:
     - name: common
       repository: file://../common
@@ -56,7 +56,7 @@ entries:
     version: 0.7.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.659555773Z"
+    created: "2025-09-08T11:57:48.239562106Z"
     dependencies:
     - name: common
       repository: file://../common
@@ -77,7 +77,7 @@ entries:
     version: 0.6.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.65855006Z"
+    created: "2025-09-08T11:57:48.238558411Z"
     dependencies:
     - name: common
       repository: file://../common
@@ -98,7 +98,7 @@ entries:
     version: 0.5.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.657525833Z"
+    created: "2025-09-08T11:57:48.23754073Z"
     dependencies:
     - name: common
       repository: file://../common
@@ -119,7 +119,7 @@ entries:
     version: 0.4.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.656556208Z"
+    created: "2025-09-08T11:57:48.236545882Z"
     dependencies:
     - name: common
       repository: file://../common
@@ -140,7 +140,7 @@ entries:
     version: 0.3.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.655880089Z"
+    created: "2025-09-08T11:57:48.235850573Z"
     description: A Helm chart for Laravel PHP Framework applications
     digest: 310b30608f71e55a7f39d8dbef9b75b379b3dfd5d3cc944895f7da2848f2b340
     keywords:
@@ -157,7 +157,7 @@ entries:
     version: 0.2.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.655438667Z"
+    created: "2025-09-08T11:57:48.235396365Z"
     description: A Helm chart for Laravel PHP Framework applications
     digest: 077200d5426a1f8e44b66814350e1deae584b94d020af7933cac206bac0b5ad4
     keywords:
@@ -175,9 +175,9 @@ entries:
   react:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.664834241Z"
+    created: "2025-09-08T11:57:48.244454224Z"
     description: A Helm chart for React applications
-    digest: a4da8ea899a33f59b6ad727576cb103a535e71172124ba9e315945cc7db00ac8
+    digest: 0b5627639522f423343618c21ad08bec9ec6d7ccf20d0dc8142a604ca45331a0
     keywords:
     - react
     - frontend
@@ -191,7 +191,7 @@ entries:
     version: 0.4.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.664265181Z"
+    created: "2025-09-08T11:57:48.243936807Z"
     dependencies:
     - name: common
       repository: file://../common
@@ -211,7 +211,7 @@ entries:
     version: 0.3.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.662483193Z"
+    created: "2025-09-08T11:57:48.243277105Z"
     description: A Helm chart for React applications
     digest: 7231c5654eedc8ed6d27b6885b71bd7577e293f683f6f4c2b6ef75ead76d87cf
     keywords:
@@ -227,7 +227,7 @@ entries:
     version: 0.2.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.661969106Z"
+    created: "2025-09-08T11:57:48.242273741Z"
     description: A Helm chart for React applications
     digest: 695fe6c658b1cc99789d74d2dae8b39e2a1ac9fe2286344bde44aac2e5ac307f
     keywords:
@@ -243,13 +243,13 @@ entries:
     version: 0.1.0
   wordpress-bedrock:
   - apiVersion: v2
-    created: "2025-09-03T12:36:32.673463926Z"
+    created: "2025-09-08T11:57:48.253174485Z"
     dependencies:
     - name: common
       repository: file://../common
       version: 0.1.0
     description: A Helm chart for WordPress based on Bedrock structure
-    digest: fbe2d86dc00321e09781538f1783e47fdce21a0336a343192808a599259db916
+    digest: 88f77ce8528cf15fd673d302f17527a0638bd23c7ca9510b53d9893bc79524be
     keywords:
     - wordpress
     - cms
@@ -261,7 +261,7 @@ entries:
     - https://unframed-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.18.0.tgz
     version: 0.18.0
   - apiVersion: v2
-    created: "2025-09-03T12:36:32.672509399Z"
+    created: "2025-09-08T11:57:48.251580054Z"
     dependencies:
     - name: common
       repository: https://unframed-nl.github.io/helm_charts
@@ -279,7 +279,7 @@ entries:
     - https://unframed-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.17.0.tgz
     version: 0.17.0
   - apiVersion: v2
-    created: "2025-09-03T12:36:32.670554662Z"
+    created: "2025-09-08T11:57:48.25042714Z"
     dependencies:
     - name: common
       repository: file://../common
@@ -297,7 +297,7 @@ entries:
     - https://unframed-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.16.0.tgz
     version: 0.16.0
   - apiVersion: v2
-    created: "2025-09-03T12:36:32.669637534Z"
+    created: "2025-09-08T11:57:48.249543861Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: ef8147ae7a8a83b9915ae72ad935fee832def2808770712f6de1e772f07eccbf
     keywords:
@@ -312,7 +312,7 @@ entries:
     version: 0.15.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.668903768Z"
+    created: "2025-09-08T11:57:48.248809699Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: fcf7fa23ed0dbdf5c0b200552283a2129bd516ead13b0b1db199cdaf337704b9
     keywords:
@@ -327,7 +327,7 @@ entries:
     version: 0.14.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.668149564Z"
+    created: "2025-09-08T11:57:48.248083964Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: bc05b962d13aee10825097845ce7e134b5a775fb0412796d9ed10013dc06bc59
     keywords:
@@ -342,7 +342,7 @@ entries:
     version: 0.13.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.667330378Z"
+    created: "2025-09-08T11:57:48.247266286Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: f8f7e58eddaa605cf02d2bae08f688b47f46954bd015514c4fc23b586e70617b
     keywords:
@@ -357,7 +357,7 @@ entries:
     version: 0.12.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.666516523Z"
+    created: "2025-09-08T11:57:48.246427319Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: ec88d5de9520d0e4e8176f3a24799c6968331857f607fd7fadf4028d757e6924
     keywords:
@@ -372,7 +372,7 @@ entries:
     version: 0.11.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.665821359Z"
+    created: "2025-09-08T11:57:48.245478367Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: afc19db25a1fb6202ec4801224ae53a0e872cc0ab87ee0c7061b05a0be81319f
     keywords:
@@ -387,7 +387,7 @@ entries:
     version: 0.10.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.676776414Z"
+    created: "2025-09-08T11:57:48.256546995Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: 7493a65ea530ff7c3ccd6e2b315fd50b1c3f7120ac3c68b3c0e61e2be979e12a
     keywords:
@@ -402,7 +402,7 @@ entries:
     version: 0.9.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.676297402Z"
+    created: "2025-09-08T11:57:48.256078279Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: 984c1db287f20a469055f5566051584f0ee7e25f1c96cb4fb688cff38529d637
     keywords:
@@ -417,7 +417,7 @@ entries:
     version: 0.8.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.675830082Z"
+    created: "2025-09-08T11:57:48.255588895Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: 53dd971d7b325f794e2cf2ad1f73bfe57a698b8871964195e56ebfb220a40791
     keywords:
@@ -432,7 +432,7 @@ entries:
     version: 0.7.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.675348896Z"
+    created: "2025-09-08T11:57:48.255112094Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: a314c3f12a72a78da07a4015846444de1922c59bec28e341b7b61f58e3b13d3b
     keywords:
@@ -447,7 +447,7 @@ entries:
     version: 0.6.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.674858513Z"
+    created: "2025-09-08T11:57:48.254603865Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: 48885bcb089108c0b55577c7585a32a4ae96e6af78abed119be622c25d83fbae
     keywords:
@@ -462,7 +462,7 @@ entries:
     version: 0.5.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.674356398Z"
+    created: "2025-09-08T11:57:48.254109251Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: e283aa26c221bf6270e7a5fccef75f39c32022100597c9b934fded036bf95c04
     keywords:
@@ -477,7 +477,7 @@ entries:
     version: 0.3.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.673922981Z"
+    created: "2025-09-08T11:57:48.253638332Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: 3ccb3a30249809945d81567534df9ee6e30baf2e21c5b02f1a86a7c620a388a0
     keywords:
@@ -492,7 +492,7 @@ entries:
     version: 0.2.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.66527401Z"
+    created: "2025-09-08T11:57:48.244903573Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: f873bb80075c75a0a2d2eada39f04cf41cc3d8a90cd2b48796d90bb2be894d5e
     keywords:
@@ -508,13 +508,13 @@ entries:
   yii2:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.681820879Z"
+    created: "2025-09-08T11:57:48.261361074Z"
     dependencies:
     - name: common
       repository: file://../common
       version: 0.1.0
     description: A Helm chart for Yii2 PHP Framework applications
-    digest: 8e61caaf9514c968533d56ddb614d4a6924b92a07c8252859ec05dbaf38c5869
+    digest: abbed77e6a54062cb9b3163ffd554dbfbdbba1ad763eb51d3a82c61520a951b5
     keywords:
     - yii2
     - php
@@ -529,7 +529,7 @@ entries:
     version: 0.6.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.680969203Z"
+    created: "2025-09-08T11:57:48.260158771Z"
     dependencies:
     - name: common
       repository: file://../common
@@ -550,7 +550,7 @@ entries:
     version: 0.5.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.679029849Z"
+    created: "2025-09-08T11:57:48.258788481Z"
     dependencies:
     - name: common
       repository: file://../common
@@ -571,7 +571,7 @@ entries:
     version: 0.4.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.678312774Z"
+    created: "2025-09-08T11:57:48.258089226Z"
     dependencies:
     - name: common
       repository: file://../common
@@ -592,7 +592,7 @@ entries:
     version: 0.3.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.677591161Z"
+    created: "2025-09-08T11:57:48.257371625Z"
     description: A Helm chart for Yii2 PHP Framework applications
     digest: d27d7c0724a29d666614d8627304652810b0622333b9c628f04c4f05b539c3e4
     keywords:
@@ -609,7 +609,7 @@ entries:
     version: 0.2.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-03T12:36:32.677188842Z"
+    created: "2025-09-08T11:57:48.256968833Z"
     description: A Helm chart for Yii2 PHP Framework applications
     digest: 465927ebcc5a2e3874b6ae228d0e79e011abac33ea65d57e99ed84054ccecbf0
     keywords:
@@ -624,4 +624,4 @@ entries:
     urls:
     - https://unframed-nl.github.io/tooling-helm-charts/yii2-0.1.0.tgz
     version: 0.1.0
-generated: "2025-09-03T12:36:32.654359868Z"
+generated: "2025-09-08T11:57:48.234480444Z"
