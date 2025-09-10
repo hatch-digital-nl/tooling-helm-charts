@@ -125,34 +125,34 @@ jobs:
           CHARTS=("laravel" "react" "wordpress-bedrock" "yii2")
           
           for chart in "${CHARTS[@]}"; do
-            if [ -d "$chart" ]; then
+            if [ -d "${{ env.CHARTS_DIR }}/$chart" ]; then
               echo "Processing chart: $chart"
           
               # Maak charts directory aan voor dependencies
-              mkdir -p $chart/charts
+              mkdir -p ${{ env.CHARTS_DIR }}/$chart/charts
           
               # Kopieer common chart als dependency
               COMMON_PACKAGE=$(find tmp/packages -name "common-*.tgz" | head -1)
               if [ -n "$COMMON_PACKAGE" ]; then
-                cp "$COMMON_PACKAGE" $chart/charts/
-                echo "Common chart copied to $chart/charts/"
+                cp "$COMMON_PACKAGE" ${{ env.CHARTS_DIR }}/$chart/charts/
+                echo "Common chart copied to ${{ env.CHARTS_DIR }}/$chart/charts/"
               fi
           
               # Update dependencies
-              if [ -f "$chart/Chart.yaml" ]; then
+              if [ -f "${{ env.CHARTS_DIR }}/$chart/Chart.yaml" ]; then
                 echo "Updating dependencies for $chart"
-                helm dependency update $chart || echo "No dependencies to update for $chart"
+                helm dependency update ${{ env.CHARTS_DIR }}/$chart || echo "No dependencies to update for $chart"
               fi
           
               # Lint de chart
-              helm lint $chart
+              helm lint ${{ env.CHARTS_DIR }}/$chart
           
               # Package de chart
-              helm package $chart --destination tmp/packages
+              helm package ${{ env.CHARTS_DIR }}/$chart --destination tmp/packages
               echo "Chart $chart packaged successfully"
           
               # Cleanup
-              rm -rf $chart/charts
+              rm -rf ${{ env.CHARTS_DIR }}/$chart/charts
             else
               echo "Warning: Chart directory $chart not found"
             fi
