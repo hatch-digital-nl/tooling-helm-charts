@@ -231,6 +231,7 @@ jobs:
         if: always()
         run: |
           echo "=== Workflow Summary ==="
+          echo "Trigger: ${{ github.event_name }}"
           echo "Charts changed: ${{ steps.changes.outputs.charts_changed || 'N/A' }}"
           echo "Helm version: ${{ env.HELM_VERSION }}"
           echo "Repository: ${{ github.repository }}"
