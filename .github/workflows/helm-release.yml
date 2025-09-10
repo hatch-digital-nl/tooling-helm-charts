@@ -7,7 +7,7 @@ on:
     paths:
       - 'charts/**'
       - 'common/**'
-      - '.github/workflows/release.yml'
+      - '.github/workflows/helm-release.yml'
   workflow_dispatch:
 
 env:
@@ -128,20 +128,10 @@ jobs:
             if [ -d "${{ env.CHARTS_DIR }}/$chart" ]; then
               echo "Processing chart: $chart"
           
-              # Maak charts directory aan voor dependencies
-              mkdir -p ${{ env.CHARTS_DIR }}/$chart/charts
-          
-              # Kopieer common chart als dependency
-              COMMON_PACKAGE=$(find tmp/packages -name "common-*.tgz" | head -1)
-              if [ -n "$COMMON_PACKAGE" ]; then
-                cp "$COMMON_PACKAGE" ${{ env.CHARTS_DIR }}/$chart/charts/
-                echo "Common chart copied to ${{ env.CHARTS_DIR }}/$chart/charts/"
-              fi
-          
-              # Update dependencies
+              # Update dependencies - dit zal automatisch de common chart downloaden
               if [ -f "${{ env.CHARTS_DIR }}/$chart/Chart.yaml" ]; then
                 echo "Updating dependencies for $chart"
-                helm dependency update ${{ env.CHARTS_DIR }}/$chart || echo "No dependencies to update for $chart"
+                helm dependency update ${{ env.CHARTS_DIR }}/$chart
               fi
           
               # Lint de chart
@@ -151,7 +141,7 @@ jobs:
               helm package ${{ env.CHARTS_DIR }}/$chart --destination tmp/packages
               echo "Chart $chart packaged successfully"
           
-              # Cleanup
+              # Cleanup dependencies
               rm -rf ${{ env.CHARTS_DIR }}/$chart/charts
             else
               echo "Warning: Chart directory $chart not found"
