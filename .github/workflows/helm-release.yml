@@ -4,100 +4,235 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'charts/**'
+      - 'common/**'
+      - '.github/workflows/release.yml'
   workflow_dispatch:
+
+env:
+  HELM_VERSION: v3.13.2
+  CHARTS_DIR: charts
+  COMMON_CHART: common
+  REPO_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
 
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure Git
         run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Install Helm
         uses: azure/setup-helm@v3
         with:
-          version: v3.10.0
+          version: ${{ env.HELM_VERSION }}
 
-      - name: Create Helm package directory
+      - name: Verify Helm installation
         run: |
-          mkdir -p .cr-release-packages
-          mkdir -p .cr-index
+          helm version
+          helm plugin list || true
 
-      - name: Checkout gh-pages branch
-        uses: actions/checkout@v3
-        with:
-          ref: gh-pages
-          path: gh-pages
-          fetch-depth: 1
-          if-exists: true
-
-      - name: Copy existing packages
+      - name: Setup working directories
         run: |
-          if [ -d "gh-pages" ]; then
-            echo "Copying existing packages"
-            # Copy all tgz files except index.yaml
-            find gh-pages -name "*.tgz" -exec cp {} .cr-release-packages/ \;
+          mkdir -p tmp/packages
+          mkdir -p tmp/repo
+          ls -la
+
+      - name: Check for chart changes
+        id: changes
+        run: |
+          # Controleer of er wijzigingen zijn in chart bestanden
+          if git diff --name-only HEAD~1 HEAD | grep -E "(charts/|common/|Chart\.yaml|values\.yaml)" > /dev/null; then
+            echo "charts_changed=true" >> $GITHUB_OUTPUT
+            echo "Charts have been modified"
+          else
+            echo "charts_changed=false" >> $GITHUB_OUTPUT
+            echo "No chart changes detected"
           fi
 
-      - name: Package and Update Charts
+      - name: Checkout existing gh-pages
+        if: steps.changes.outputs.charts_changed == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: tmp/existing-repo
+          fetch-depth: 1
+        continue-on-error: true
+
+      - name: Preserve existing packages
+        if: steps.changes.outputs.charts_changed == 'true'
         run: |
-          # First package the common chart
-          echo "Packaging common chart"
-          helm package common -d .cr-release-packages
+          if [ -d "tmp/existing-repo" ]; then
+            echo "Copying existing packages from gh-pages..."
+            # Kopieer bestaande .tgz bestanden
+            find tmp/existing-repo -name "*.tgz" -type f -exec cp {} tmp/packages/ \; || true
           
-          # Create charts directory for each chart and copy common chart
-          for chart in laravel react wordpress-bedrock yii2; do
-            echo "Setting up dependencies for $chart"
-            mkdir -p $chart/charts
-            cp .cr-release-packages/common-*.tgz $chart/charts/
-            
-            # Package the chart
-            echo "Packaging $chart chart"
-            helm package $chart -d .cr-release-packages
-          done
+            # Kopieer bestaande index.yaml als basis
+            if [ -f "tmp/existing-repo/index.yaml" ]; then
+              cp tmp/existing-repo/index.yaml tmp/repo/index.yaml
+              echo "Existing index.yaml copied"
+            fi
+          
+            echo "Existing packages:"
+            ls -la tmp/packages/ || echo "No existing packages found"
+          else
+            echo "No existing gh-pages branch found"
+          fi
 
-      - name: Create/Update Helm Repository Index
+      - name: Package common chart
+        if: steps.changes.outputs.charts_changed == 'true'
         run: |
-          echo "Creating new index.yaml"
-          helm repo index .cr-release-packages --url https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
-          cp .cr-release-packages/index.yaml .cr-index/
+          echo "=== Packaging common chart ==="
+          if [ -d "${{ env.COMMON_CHART }}" ]; then
+            # Valideer Chart.yaml
+            helm lint ${{ env.COMMON_CHART }}
+          
+            # Package common chart
+            helm package ${{ env.COMMON_CHART }} --destination tmp/packages
+            echo "Common chart packaged successfully"
+            ls -la tmp/packages/common-*.tgz
+          else
+            echo "Warning: Common chart directory not found"
+            exit 1
+          fi
 
-      - name: Publish Helm Charts
+      - name: Package application charts
+        if: steps.changes.outputs.charts_changed == 'true'
+        run: |
+          echo "=== Packaging application charts ==="
+          
+          # Definieer de charts die afhankelijk zijn van common
+          CHARTS=("laravel" "react" "wordpress-bedrock" "yii2")
+          
+          for chart in "${CHARTS[@]}"; do
+            if [ -d "$chart" ]; then
+              echo "Processing chart: $chart"
+          
+              # Maak charts directory aan voor dependencies
+              mkdir -p $chart/charts
+          
+              # Kopieer common chart als dependency
+              COMMON_PACKAGE=$(find tmp/packages -name "common-*.tgz" | head -1)
+              if [ -n "$COMMON_PACKAGE" ]; then
+                cp "$COMMON_PACKAGE" $chart/charts/
+                echo "Common chart copied to $chart/charts/"
+              fi
+          
+              # Update dependencies
+              if [ -f "$chart/Chart.yaml" ]; then
+                echo "Updating dependencies for $chart"
+                helm dependency update $chart || echo "No dependencies to update for $chart"
+              fi
+          
+              # Lint de chart
+              helm lint $chart
+          
+              # Package de chart
+              helm package $chart --destination tmp/packages
+              echo "Chart $chart packaged successfully"
+          
+              # Cleanup
+              rm -rf $chart/charts
+            else
+              echo "Warning: Chart directory $chart not found"
+            fi
+          done
+          
+          echo "All charts packaged:"
+          ls -la tmp/packages/
+
+      - name: Generate Helm repository index
+        if: steps.changes.outputs.charts_changed == 'true'
+        run: |
+          echo "=== Generating Helm repository index ==="
+          
+          # Genereer nieuwe index.yaml
+          helm repo index tmp/packages --url ${{ env.REPO_URL }} --merge tmp/repo/index.yaml || \
+          helm repo index tmp/packages --url ${{ env.REPO_URL }}
+          
+          # Kopieer index.yaml naar repo directory
+          cp tmp/packages/index.yaml tmp/repo/
+          
+          echo "Repository index generated:"
+          head -20 tmp/repo/index.yaml
+
+      - name: Prepare docs (if exists)
+        run: |
+          if [ -d "docs" ]; then
+            echo "Copying documentation..."
+            cp -r docs/* tmp/repo/ || true
+          fi
+
+      - name: Validate packages
+        if: steps.changes.outputs.charts_changed == 'true'
+        run: |
+          echo "=== Validating packages ==="
+          
+          # Controleer of alle verwachte bestanden aanwezig zijn
+          if [ ! -f "tmp/repo/index.yaml" ]; then
+            echo "Error: index.yaml not found"
+            exit 1
+          fi
+          
+          # Controleer of er packages zijn
+          if [ -z "$(find tmp/packages -name "*.tgz")" ]; then
+            echo "Error: No chart packages found"
+            exit 1
+          fi
+          
+          echo "Packages to be published:"
+          ls -la tmp/packages/*.tgz
+          
+          echo "Repository structure:"
+          find tmp/repo -type f | head -20
+
+      - name: Deploy to GitHub Pages
+        if: steps.changes.outputs.charts_changed == 'true'
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: .cr-release-packages
-          target-folder: .
+          folder: tmp/packages
           branch: gh-pages
-          git-config-name: ${{ github.actor }}
-          git-config-email: ${{ github.actor }}@users.noreply.github.com
-          commit-message: "Update Helm repository"
           clean: false
+          commit-message: |
+            Release Helm charts
+            
+            Updated charts: ${{ steps.changes.outputs.charts_changed }}
+            Workflow: ${{ github.workflow }}
+            Commit: ${{ github.sha }}
+          git-config-name: github-actions[bot]
+          git-config-email: github-actions[bot]@users.noreply.github.com
 
-      - name: Publish Helm Repository Index
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: .cr-index
-          target-folder: .
-          branch: gh-pages
-          git-config-name: ${{ github.actor }}
-          git-config-email: ${{ github.actor }}@users.noreply.github.com
-          commit-message: "Update Helm repository index"
-          clean: false
+      - name: Verify deployment
+        if: steps.changes.outputs.charts_changed == 'true'
+        run: |
+          echo "=== Deployment completed ==="
+          echo "Helm repository URL: ${{ env.REPO_URL }}"
+          echo "Repository index: ${{ env.REPO_URL }}/index.yaml"
+          echo ""
+          echo "To add this repository:"
+          echo "helm repo add $(basename ${{ github.repository }}) ${{ env.REPO_URL }}"
+          echo "helm repo update"
 
-      - name: Publish Website
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: docs
-          target-folder: .
-          branch: gh-pages
-          git-config-name: ${{ github.actor }}
-          git-config-email: ${{ github.actor }}@users.noreply.github.com
-          commit-message: "Update Helm charts website"
-          clean: false
+      - name: Summary
+        if: always()
+        run: |
+          echo "=== Workflow Summary ==="
+          echo "Charts changed: ${{ steps.changes.outputs.charts_changed || 'N/A' }}"
+          echo "Helm version: ${{ env.HELM_VERSION }}"
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
