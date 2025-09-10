@@ -4,13 +4,13 @@ fullnameOverride: ""
 
 ## Nginx image
 nginxImage:
-  repository: rg.nl-ams.scw.cloud/unframed-container-registry/nginx
+  repository: ghcr.io/unframed-nl/tooling-docker-containers/nginx
   tag: "latest"
   pullPolicy: IfNotPresent
 
 ## Data container for application files
 dataImage:
-  repository: rg.nl-ams.scw.cloud/unframed-container-registry/dummy_page
+  repository: ghcr.io/unframed-nl/hosting-dummy-page
   tag: "latest"
   pullPolicy: IfNotPresent
 
