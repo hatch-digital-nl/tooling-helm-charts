@@ -55,13 +55,19 @@ jobs:
       - name: Check for chart changes
         id: changes
         run: |
-          # Controleer of er wijzigingen zijn in chart bestanden
-          if git diff --name-only HEAD~1 HEAD | grep -E "(charts/|common/|Chart\.yaml|values\.yaml)" > /dev/null; then
+          # Bij workflow_dispatch altijd uitvoeren
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             echo "charts_changed=true" >> $GITHUB_OUTPUT
-            echo "Charts have been modified"
+            echo "Manual workflow dispatch - forcing chart release"
           else
-            echo "charts_changed=false" >> $GITHUB_OUTPUT
-            echo "No chart changes detected"
+            # Controleer of er wijzigingen zijn in chart bestanden (inclusief charts/ directory)
+            if git diff --name-only HEAD~1 HEAD | grep -E "(charts/|${{ env.COMMON_CHART }}/|Chart\.yaml|values\.yaml)" > /dev/null; then
+              echo "charts_changed=true" >> $GITHUB_OUTPUT
+              echo "Charts have been modified"
+            else
+              echo "charts_changed=false" >> $GITHUB_OUTPUT
+              echo "No chart changes detected"
+            fi
           fi
 
       - name: Checkout existing gh-pages
