@@ -44,6 +44,8 @@ spec:
           volumeMounts:
             - name: {{ .Values.sharedVolume.name }}
               mountPath: /data
+          resources:
+            {{- toYaml .Values.resources.data | nindent 12 }}
       containers:
         - name: nginx
           securityContext:
