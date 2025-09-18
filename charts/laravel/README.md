@@ -1,16 +1,66 @@
 # Laravel Helm Chart
 
-This Helm chart deploys a Laravel application with PHP-FPM, Nginx, MySQL, and optional Redis support.
+This Helm chart deploys a Laravel application with PHP-FPM, Nginx and optional Redis support.
 
 ## Features
 
 - **Laravel Application**: PHP-FPM container with Laravel application
 - **Web Server**: Nginx container for serving static files and proxying PHP requests
-- **Database**: MySQL database with persistent storage
+- **Database Integration**: Automatic database provisioning with DB Operator
 - **Cache**: Optional Redis cache
 - **Queue Workers**: Optional Laravel queue workers
 - **Cron Jobs**: Laravel scheduler and custom cron jobs
 - **Migration Job**: Automated database migrations with ArgoCD PreSync hooks
+
+## Database Integration (DB Operator)
+
+This chart supports automatic database provisioning using the [DB Operator](https://github.com/db-operator/db-operator). When enabled, the chart will:
+
+1. Create a Database CRD that the DB Operator will process
+2. Automatically generate database credentials in a Kubernetes secret
+3. Mount the credentials as environment variables in your Laravel containers
+
+### Configuration
+
+Enable database integration in your `values.yaml`:
+
+```yaml
+database:
+  enabled: true
+  instance: "my-mysql-cluster"     # Name of your MySQL database cluster
+  name: "laravel_app"              # Name of the database to create
+  deletionProtected: true          # Protect against accidental deletion
+```
+
+### Environment Variables
+
+When database integration is enabled, the following environment variables are automatically available in your Laravel containers:
+
+- `DB_HOST` - Database host
+- `DB_PORT` - Database port
+- `DB_DATABASE` - Database name
+- `DB_USERNAME` - Database username
+- `DB_PASSWORD` - Database password
+
+### Custom Secret Templates
+
+You can customize the generated secret using `secretsTemplates`:
+
+```yaml
+database:
+  enabled: true
+  instance: "my-mysql-cluster"
+  name: "laravel_app"
+  # secretsTemplates are pre-configured for MySQL compatibility
+  # You can override them if needed:
+  # secretsTemplates:
+  #   DB_HOST: "{{ .DatabaseHost }}"
+  #   DB_PORT: "{{ .DatabasePort }}"
+  #   DB_DATABASE: "{{ .DatabaseName }}"
+  #   DB_USERNAME: "{{ .UserName }}"
+  #   DB_PASSWORD: "{{ .Password }}"
+  #   CUSTOM_DSN: "mysql://{{ .UserName }}:{{ .Password }}@{{ .DatabaseHost }}:{{ .DatabasePort }}/{{ .DatabaseName }}"
+```
 
 ## Migration Job
 
@@ -110,8 +160,66 @@ helm install my-laravel-app ./laravel
 
 See `values.yaml` for all available configuration options.
 
+## Examples
+
+### Basic Laravel Application with Database
+
+```yaml
+database:
+  enabled: true
+  instance: "production-mysql"
+  name: "my_laravel_app"
+
+laravel:
+  env:
+    APP_NAME: "My Laravel App"
+    APP_ENV: production
+    APP_DEBUG: "false"
+
+migrationJob:
+  enabled: true
+```
+
+### With Redis Cache
+
+```yaml
+database:
+  enabled: true
+  instance: "production-mysql"
+  name: "my_laravel_app"
+
+redis:
+  enabled: true
+  auth:
+    enabled: true
+    password: "my-redis-password"
+
+laravel:
+  env:
+    CACHE_DRIVER: redis
+    SESSION_DRIVER: redis
+```
+
+### With Queue Workers
+
+```yaml
+database:
+  enabled: true
+  instance: "production-postgres"
+  name: "my_laravel_app"
+
+queueWorkers:
+  enabled: true
+  workers:
+    - name: default
+      replicas: 2
+      connection: database
+      queue: default
+```
+
 ## Requirements
 
 - Kubernetes 1.19+
 - Helm 3.0+
+- DB Operator (if using database integration)
 - ArgoCD (optional, for hook functionality)

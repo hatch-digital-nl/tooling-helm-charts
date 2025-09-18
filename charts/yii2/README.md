@@ -4,12 +4,21 @@ This Helm chart deploys a Yii2 application on Kubernetes.
 
 ## Introduction
 
-This chart bootstraps a Yii2 application deployment on a Kubernetes cluster using the Helm package manager.
+This chart bootstraps a Yii2 application deployment on a Kubernetes cluster using the Helm package manager. It includes:
+
+- PHP-FPM container for running Yii2 application
+- Nginx container for serving the application
+- Database integration with DB Operator for automatic database provisioning
+- Optional Redis cache
+- Queue workers for background job processing
+- Cron jobs for scheduled tasks
+- Support for environment variables and secrets
 
 ## Prerequisites
 
 - Kubernetes 1.19+
 - Helm 3.2.0+
+- DB Operator (if using database integration)
 
 ## Installing the Chart
 
@@ -22,6 +31,60 @@ $ helm install my-release ./yii2
 ## Configuration
 
 The following table lists the configurable parameters of the Yii2 chart and their default values.
+
+### Database Integration (DB Operator)
+
+This chart supports automatic database provisioning using the [DB Operator](https://github.com/db-operator/db-operator). When enabled, the chart will:
+
+1. Create a Database CRD that the DB Operator will process
+2. Automatically generate database credentials in a Kubernetes secret
+3. Mount the credentials as environment variables in your Yii2 containers
+
+#### Configuration
+
+Enable database integration in your `values.yaml`:
+
+```yaml
+database:
+  enabled: true
+  instance: "my-postgres-cluster"  # Name of your database cluster
+  name: "yii2_app"                 # Name of the database to create
+  deletionProtected: true          # Protect against accidental deletion
+```
+
+#### Environment Variables
+
+When database integration is enabled, the following environment variables are automatically available in your Yii2 containers:
+
+- `DB_HOST` - Database host
+- `DB_PORT` - Database port
+- `DB_DATABASE` - Database name
+- `DB_USERNAME` - Database username
+- `DB_PASSWORD` - Database password
+
+#### Custom Secret Templates
+
+You can customize the generated secret using `secretsTemplates`:
+
+```yaml
+database:
+  enabled: true
+  instance: "my-postgres-cluster"
+  name: "yii2_app"
+  secretsTemplates:
+    PASSWORD_USER: "{{ .Password }}_{{ .UserName }}"
+    CUSTOM_DSN: "pgsql:host={{ .DatabaseHost }};port={{ .DatabasePort }};dbname={{ .DatabaseName }}"
+```
+
+### Database Parameters
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `database.enabled` | Enable database provisioning with DB Operator | `false` |
+| `database.instance` | Name of the database cluster instance | `""` |
+| `database.name` | Name of the database to create | `""` |
+| `database.deletionProtected` | Enable deletion protection for the database | `true` |
+| `database.secretsTemplates` | Custom secret templates for database credentials | `{}` |
 
 ### Global Settings
 
@@ -130,13 +193,85 @@ Example configuration:
 
 ```yaml
 secretMounts:
-  - secretName: "yii2-db-credentials"
+  - secretName: "yii2-external-api"
     keys:
       # Simple key (no renaming)
-      - "DB_USERNAME"
-      - "DB_PASSWORD"
-      - "DB_HOST"
+      - "API_KEY"
+      - "API_SECRET"
       # Key with renaming (from -> to)
-      - from: "DB_DATABASE"
-        to: "DB_NAME"
+      - from: "EXTERNAL_API_URL"
+        to: "API_ENDPOINT"
+```
+
+## Examples
+
+### Basic Yii2 Application with Database
+
+```yaml
+database:
+  enabled: true
+  instance: "production-postgres"
+  name: "yii2_app"
+
+yii2:
+  env:
+    YII_ENV: production
+    YII_DEBUG: "false"
+```
+
+### Yii2 with Database and Queue Workers
+
+```yaml
+database:
+  enabled: true
+  instance: "production-postgres"
+  name: "yii2_app"
+
+queueWorkers:
+  enabled: true
+  workers:
+    - name: queue
+      replicas: 2
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+
+yii2:
+  env:
+    YII_ENV: production
+    YII_DEBUG: "false"
+```
+
+### Yii2 with Database, Redis, and Cron Jobs
+
+```yaml
+database:
+  enabled: true
+  instance: "production-postgres"
+  name: "yii2_app"
+
+redis:
+  enabled: true
+  auth:
+    enabled: true
+    password: "secure-redis-password"
+
+cronJobs:
+  enabled: true
+  jobs:
+    - name: cleanup
+      schedule: "0 2 * * *"  # Daily at 2 AM
+      command: "php yii cleanup/run"
+    - name: reports
+      schedule: "0 8 * * 1"  # Monday at 8 AM
+      command: "php yii reports/generate"
+
+yii2:
+  env:
+    YII_ENV: production
+    YII_DEBUG: "false"
 ```

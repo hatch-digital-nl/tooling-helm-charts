@@ -78,6 +78,34 @@ Common environment variables for Yii2 containers
 - name: REDIS_DATABASE
   value: "0"
 {{- end }}
+{{- if .Values.database.enabled }}
+# Database credentials from DB Operator
+- name: DB_HOST
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "yii2.fullname" . }}-db-credentials
+      key: DB_HOST
+- name: DB_PORT
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "yii2.fullname" . }}-db-credentials
+      key: DB_PORT
+- name: DB_DATABASE
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "yii2.fullname" . }}-db-credentials
+      key: DB_DATABASE
+- name: DB_USERNAME
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "yii2.fullname" . }}-db-credentials
+      key: DB_USERNAME
+- name: DB_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "yii2.fullname" . }}-db-credentials
+      key: DB_PASSWORD
+{{- end }}
 {{- if .Values.secretMounts }}
 # Mount secrets as environment variables
 {{- range $secretConfig := .Values.secretMounts }}

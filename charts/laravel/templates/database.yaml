@@ -1,0 +1,18 @@
+{{- if .Values.database.enabled }}
+apiVersion: "kinda.rocks/v1beta1"
+kind: "Database"
+metadata:
+  name: {{ include "laravel.fullname" . }}-db
+  labels:
+    {{- include "laravel.labels" . | nindent 4 }}
+spec:
+  secretName: {{ include "laravel.fullname" . }}-db-credentials
+  instance: {{ .Values.database.instance | quote }}
+  deletionProtected: {{ .Values.database.deletionProtected }}
+  {{- if .Values.database.secretsTemplates }}
+  secretsTemplates:
+    {{- toYaml .Values.database.secretsTemplates | nindent 4 }}
+  {{- end }}
+  # Database name is passed as a parameter to the DB operator
+  database: {{ .Values.database.name | quote }}
+{{- end }}
