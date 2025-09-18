@@ -2,7 +2,7 @@
 apiVersion: "kinda.rocks/v1beta1"
 kind: "Database"
 metadata:
-  name: {{ include "yii2.fullname" . }}-db
+  name: {{ .Values.database.name }}
   labels:
     {{- include "yii2.labels" . | nindent 4 }}
 spec:
@@ -13,6 +13,4 @@ spec:
   secretsTemplates:
     {{- toYaml .Values.database.secretsTemplates | nindent 4 }}
   {{- end }}
-  # Database name is passed as a parameter to the DB operator
-  database: {{ .Values.database.name | quote }}
 {{- end }}
