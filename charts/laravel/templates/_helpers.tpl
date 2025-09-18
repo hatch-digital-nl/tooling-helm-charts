@@ -92,6 +92,34 @@ Laravel environment variables
       key: redis-password
 {{- end }}
 {{- end }}
+{{- if .Values.database.enabled }}
+# Database credentials from DB Operator
+- name: DB_HOST
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "laravel.fullname" . }}-db-credentials
+      key: DB_HOST
+- name: DB_PORT
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "laravel.fullname" . }}-db-credentials
+      key: DB_PORT
+- name: DB_DATABASE
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "laravel.fullname" . }}-db-credentials
+      key: DB_DATABASE
+- name: DB_USERNAME
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "laravel.fullname" . }}-db-credentials
+      key: DB_USERNAME
+- name: DB_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "laravel.fullname" . }}-db-credentials
+      key: DB_PASSWORD
+{{- end }}
 {{- end }}
 
 {{/*

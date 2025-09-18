@@ -9,7 +9,7 @@ This chart bootstraps a WordPress Bedrock deployment on a Kubernetes cluster usi
 - PHP-FPM container for running WordPress
 - Nginx container for serving the application
 - Shared volume for application files
-- Optional MySQL database deployment
+- Database integration with DB Operator for automatic database provisioning
 - Optional Redis cache for W3 Total Cache plugin
 - Support for environment variables and secrets
 - Horizontal Pod Autoscaler (HPA) for automatic scaling based on resource usage
@@ -19,6 +19,7 @@ This chart bootstraps a WordPress Bedrock deployment on a Kubernetes cluster usi
 
 - Kubernetes 1.19+
 - Helm 3.2.0+
+- DB Operator (if using database integration)
 - PV provisioner support in the underlying infrastructure (if persistence is required)
 
 ## Installing the Chart
@@ -29,6 +30,50 @@ helm install my-wordpress my-repo/wordpress-bedrock
 
 ## Configuration
 
+### Database Integration (DB Operator)
+
+This chart supports automatic database provisioning using the [DB Operator](https://github.com/db-operator/db-operator). When enabled, the chart will:
+
+1. Create a Database CRD that the DB Operator will process
+2. Automatically generate database credentials in a Kubernetes secret
+3. Mount the credentials as environment variables in your WordPress containers
+
+#### Configuration
+
+Enable database integration in your `values.yaml`:
+
+```yaml
+database:
+  enabled: true
+  instance: "my-postgres-cluster"  # Name of your database cluster
+  name: "wordpress_app"            # Name of the database to create
+  deletionProtected: true          # Protect against accidental deletion
+```
+
+#### Environment Variables
+
+When database integration is enabled, the following environment variables are automatically available in your WordPress containers:
+
+- `DB_HOST` - Database host
+- `DB_PORT` - Database port
+- `DB_NAME` - Database name
+- `DB_USER` - Database username
+- `DB_PASSWORD` - Database password
+
+#### Custom Secret Templates
+
+You can customize the generated secret using `secretsTemplates`:
+
+```yaml
+database:
+  enabled: true
+  instance: "my-postgres-cluster"
+  name: "wordpress_app"
+  secretsTemplates:
+    PASSWORD_USER: "{{ .Password }}_{{ .UserName }}"
+    CUSTOM_CONNECTION_STRING: "postgresql://{{ .UserName }}:{{ .Password }}@{{ .DatabaseHost }}:{{ .DatabasePort }}/{{ .DatabaseName }}"
+```
+
 ### Environment Variables
 
 The chart allows you to set environment variables for the WordPress application through the `wordpress.env` section in the `values.yaml` file:
@@ -36,10 +81,6 @@ The chart allows you to set environment variables for the WordPress application 
 ```yaml
 wordpress:
   env:
-    DB_NAME: wordpress
-    DB_USER: wordpress
-    DB_PASSWORD: ""
-    DB_HOST: mysql
     WP_ENV: production
     WP_HOME: https://example.com
     WP_SITEURL: https://example.com/wp
@@ -108,6 +149,16 @@ This approach allows you to:
 
 ## Parameters
 
+### Database Parameters
+
+| Name                      | Description                                                | Value           |
+|---------------------------|------------------------------------------------------------|-----------------|
+| `database.enabled`        | Enable database provisioning with DB Operator             | `false`         |
+| `database.instance`       | Name of the database cluster instance                      | `""`            |
+| `database.name`           | Name of the database to create                             | `""`            |
+| `database.deletionProtected` | Enable deletion protection for the database             | `true`          |
+| `database.secretsTemplates` | Custom secret templates for database credentials         | `{}`            |
+
 ### Common Parameters
 
 | Name                | Description                                                                       | Value           |
@@ -171,18 +222,6 @@ This approach allows you to:
 | `secretMounts[].keys[]`   | String key name or object with from/to for key renaming    | `""`            |
 | `secretMounts[].keys[].from` | Original key name in the secret                         | `""`            |
 | `secretMounts[].keys[].to`   | Desired environment variable name in the container      | `""`            |
-
-### MySQL Parameters
-
-| Name                      | Description                                                | Value           |
-|---------------------------|------------------------------------------------------------|-----------------|
-| `mysql.enabled`           | Deploy a MySQL server                                      | `true`          |
-| `mysql.auth.database`     | MySQL database name                                        | `wordpress`     |
-| `mysql.auth.username`     | MySQL user name                                            | `wordpress`     |
-| `mysql.auth.password`     | MySQL user password                                        | `""`            |
-| `mysql.auth.rootPassword` | MySQL root password                                        | `""`            |
-| `mysql.primary.persistence.enabled` | Enable MySQL persistence using PVC               | `true`          |
-| `mysql.primary.persistence.size`    | PVC Storage Request for MySQL volume             | `8Gi`           |
 
 ### Redis Parameters
 
@@ -403,3 +442,62 @@ After deploying WordPress with Redis enabled, you'll need to:
 3. In the W3 Total Cache settings, set the Redis server to the environment variables that are automatically configured
 
 This setup provides a robust caching solution that can significantly improve the performance of your WordPress site.
+
+## Examples
+
+### Basic WordPress with Database
+
+```yaml
+database:
+  enabled: true
+  instance: "production-postgres"
+  name: "wordpress_site"
+
+wordpress:
+  env:
+    WP_ENV: production
+    WP_HOME: https://example.com
+    WP_SITEURL: https://example.com/wp
+```
+
+### WordPress with Database and Redis
+
+```yaml
+database:
+  enabled: true
+  instance: "production-postgres"
+  name: "wordpress_site"
+
+redis:
+  enabled: true
+  auth:
+    enabled: true
+    password: "secure-redis-password"
+
+wordpress:
+  env:
+    WP_ENV: production
+    WP_HOME: https://example.com
+    WP_SITEURL: https://example.com/wp
+```
+
+### WordPress with Autoscaling
+
+```yaml
+database:
+  enabled: true
+  instance: "production-postgres"
+  name: "wordpress_site"
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+wordpress:
+  env:
+    WP_ENV: production
+    WP_HOME: https://example.com
+    WP_SITEURL: https://example.com/wp
+```

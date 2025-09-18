@@ -1,0 +1,91 @@
+# Example values.yaml for Laravel with DB Operator integration
+# This example shows how to deploy a Laravel application with automatic database provisioning
+
+# Enable database integration with DB Operator
+database:
+  enabled: true
+  instance: "production-mysql"  # Replace with your actual MySQL database cluster name
+  name: "laravel_app"
+  deletionProtected: true
+  # secretsTemplates are pre-configured in values.yaml for MySQL compatibility
+
+# Laravel application configuration
+laravel:
+  env:
+    APP_NAME: "My Laravel App"
+    APP_ENV: production
+    APP_DEBUG: "false"
+    APP_KEY: "base64:your-app-key-here"  # Generate with: php artisan key:generate --show
+    
+    # Cache and session configuration
+    CACHE_DRIVER: database
+    SESSION_DRIVER: database
+    QUEUE_CONNECTION: database
+    
+    # Logging
+    LOG_CHANNEL: stack
+    LOG_LEVEL: info
+
+# Enable database migrations
+migrationJob:
+  enabled: true
+  hook:
+    enabled: true
+    phase: PreSync
+    deletePolicy: BeforeHookCreation
+  command: "php artisan migrate --force"
+
+# Optional: Enable queue workers for background jobs
+queueWorkers:
+  enabled: true
+  workers:
+    - name: default
+      replicas: 1
+      connection: database
+      queue: default
+      tries: 3
+      timeout: 60
+
+# Optional: Enable cron jobs
+cronJobs:
+  enabled: true
+  scheduler: true  # Enable Laravel scheduler
+
+# Resource configuration
+resources:
+  php:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  nginx:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 8080
+
+# Ingress configuration (adjust for your setup)
+ingress:
+  enabled: false
+  # enabled: true
+  # className: "nginx"
+  # annotations:
+  #   cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  # hosts:
+  #   - host: laravel.example.com
+  #     paths:
+  #       - path: /
+  #         pathType: ImplementationSpecific
+  # tls:
+  #   - secretName: laravel-tls
+  #     hosts:
+  #       - laravel.example.com

@@ -79,6 +79,34 @@ spec:
             - name: WP_REDIS_DATABASE
               value: "0"
             {{- end }}
+            {{- if .Values.database.enabled }}
+            # Database credentials from DB Operator
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "wordpress-bedrock.fullname" . }}-db-credentials
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "wordpress-bedrock.fullname" . }}-db-credentials
+                  key: DB_PORT
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "wordpress-bedrock.fullname" . }}-db-credentials
+                  key: DB_NAME
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "wordpress-bedrock.fullname" . }}-db-credentials
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "wordpress-bedrock.fullname" . }}-db-credentials
+                  key: DB_PASSWORD
+            {{- end }}
             {{- if .Values.secretMounts }}
             # Mount secrets as environment variables
             {{- range $secretConfig := .Values.secretMounts }}

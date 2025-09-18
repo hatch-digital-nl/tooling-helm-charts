@@ -1,0 +1,161 @@
+# Example values.yaml for Yii2 with DB Operator integration
+# This example shows how to deploy a Yii2 application with automatic database provisioning
+
+# Enable database integration with DB Operator
+database:
+  enabled: true
+  instance: "production-mysql"  # Replace with your actual MySQL database cluster name
+  name: "yii2_app"
+  deletionProtected: true
+  # secretsTemplates are pre-configured in values.yaml for MySQL compatibility
+
+# Yii2 application configuration
+yii2:
+  env:
+    YII_ENV: production
+    YII_DEBUG: "false"
+  config:
+    webRoot: "/var/www/html/web"
+
+# Optional: Enable Redis for caching and sessions
+redis:
+  enabled: true
+  auth:
+    enabled: true
+    password: "secure-redis-password"
+  persistence:
+    enabled: true
+    size: 1Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  config:
+    maxmemory: "128mb"
+    maxmemoryPolicy: "allkeys-lru"
+
+# Optional: Enable queue workers for background jobs
+queueWorkers:
+  enabled: true
+  workers:
+    - name: queue
+      replicas: 2
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+    - name: email-queue
+      replicas: 1
+      resources:
+        limits:
+          cpu: 300m
+          memory: 256Mi
+        requests:
+          cpu: 50m
+          memory: 64Mi
+
+# Optional: Enable cron jobs for scheduled tasks
+cronJobs:
+  enabled: true
+  jobs:
+    - name: cleanup
+      schedule: "0 2 * * *"  # Daily at 2 AM
+      command: "php yii cleanup/run"
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+    - name: reports
+      schedule: "0 8 * * 1"  # Monday at 8 AM
+      command: "php yii reports/generate"
+      resources:
+        limits:
+          cpu: 300m
+          memory: 256Mi
+        requests:
+          cpu: 50m
+          memory: 64Mi
+
+# Resource configuration
+resources:
+  php:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  nginx:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+# Enable health checks
+probes:
+  liveness:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
+    path: /
+    port: 8080
+  readiness:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
+    path: /
+    port: 8080
+
+# Optional: Enable autoscaling
+autoscaling:
+  enabled: false
+  # enabled: true
+  # minReplicas: 2
+  # maxReplicas: 8
+  # targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 8080
+
+# Ingress configuration (adjust for your setup)
+ingress:
+  enabled: false
+  # enabled: true
+  # className: "nginx"
+  # annotations:
+  #   cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  # hosts:
+  #   - host: yii2.example.com
+  #     paths:
+  #       - path: /
+  #         pathType: ImplementationSpecific
+  # tls:
+  #   - secretName: yii2-tls
+  #     hosts:
+  #       - yii2.example.com
+
+# Optional: Mount additional secrets for external services
+secretMounts: []
+# - secretName: "yii2-external-api"
+#   keys:
+#     - "API_KEY"
+#     - "API_SECRET"
+#     - from: "EXTERNAL_API_URL"
+#       to: "API_ENDPOINT"

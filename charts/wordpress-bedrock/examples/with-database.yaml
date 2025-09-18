@@ -1,0 +1,120 @@
+# Example values.yaml for WordPress Bedrock with DB Operator integration
+# This example shows how to deploy a WordPress Bedrock application with automatic database provisioning
+
+# Enable database integration with DB Operator
+database:
+  enabled: true
+  instance: "production-mysql"  # Replace with your actual MySQL database cluster name
+  name: "wordpress_site"
+  deletionProtected: true
+  # secretsTemplates are pre-configured in values.yaml for WordPress Bedrock compatibility
+
+# WordPress Bedrock configuration
+wordpress:
+  bedrock:
+    enabled: true
+    webRoot: "/var/www/html/public"
+  
+  env:
+    # WordPress environment
+    WP_ENV: production
+    WP_HOME: https://example.com  # Replace with your actual domain
+    WP_SITEURL: https://example.com/wp
+    
+    # WordPress security keys and salts
+    # Generate these using: https://roots.io/salts.html
+    AUTH_KEY: "your-auth-key-here"
+    SECURE_AUTH_KEY: "your-secure-auth-key-here"
+    LOGGED_IN_KEY: "your-logged-in-key-here"
+    NONCE_KEY: "your-nonce-key-here"
+    AUTH_SALT: "your-auth-salt-here"
+    SECURE_AUTH_SALT: "your-secure-auth-salt-here"
+    LOGGED_IN_SALT: "your-logged-in-salt-here"
+    NONCE_SALT: "your-nonce-salt-here"
+
+# Optional: Enable Redis for caching
+redis:
+  enabled: true
+  auth:
+    enabled: true
+    password: "secure-redis-password"
+  persistence:
+    enabled: true
+    size: 2Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  config:
+    maxmemory: "256mb"
+    maxmemoryPolicy: "allkeys-lru"
+
+# Resource configuration
+resources:
+  php:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  nginx:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+# Enable health checks
+probes:
+  liveness:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
+    path: /
+    port: 8080
+  readiness:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
+    path: /
+    port: 8080
+
+# Optional: Enable autoscaling
+autoscaling:
+  enabled: false
+  # enabled: true
+  # minReplicas: 2
+  # maxReplicas: 10
+  # targetCPUUtilizationPercentage: 70
+  # targetMemoryUtilizationPercentage: 80
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 8080
+
+# Ingress configuration (adjust for your setup)
+ingress:
+  enabled: false
+  # enabled: true
+  # className: "nginx"
+  # annotations:
+  #   cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  #   nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+  # hosts:
+  #   - host: example.com
+  #     paths:
+  #       - path: /
+  #         pathType: ImplementationSpecific
+  # tls:
+  #   - secretName: wordpress-tls
+  #     hosts:
+  #       - example.com

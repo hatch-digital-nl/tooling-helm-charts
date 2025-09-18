@@ -151,19 +151,6 @@ probes:
     path: /
     port: 8080
 
-## MySQL database settings
-mysql:
-  enabled: true
-  auth:
-    database: wordpress
-    username: wordpress
-    password: ""
-    rootPassword: ""
-  primary:
-    persistence:
-      enabled: true
-      size: 8Gi
-
 ## Redis cache settings
 redis:
   enabled: false
@@ -186,6 +173,24 @@ redis:
   config:
     maxmemory: "100mb"
     maxmemoryPolicy: "allkeys-lru"
+
+## Database configuration for DB Operator
+## When enabled, creates a Database CRD and automatically mounts the generated secret
+database:
+  enabled: false
+  # Name of the database cluster instance (required when enabled)
+  instance: ""
+  # Name of the database to create (required when enabled)
+  name: ""
+  # Whether to enable deletion protection for the database
+  deletionProtected: true
+  # Custom secret templates for WordPress Bedrock database credentials
+  secretsTemplates:
+    DB_HOST: "{{ .DatabaseHost }}"
+    DB_PORT: "{{ .DatabasePort }}"
+    DB_NAME: "{{ .DatabaseName }}"
+    DB_USER: "{{ .UserName }}"
+    DB_PASSWORD: "{{ .Password }}"
 
 ## Secret mounts configuration
 ## Reference existing secrets and mount their keys as environment variables

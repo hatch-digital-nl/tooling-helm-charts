@@ -30,7 +30,6 @@ laravel:
     LOG_CHANNEL: stack
     LOG_LEVEL: debug
     
-    DB_CONNECTION: mysql  
     BROADCAST_DRIVER: log
     CACHE_DRIVER: database
     FILESYSTEM_DISK: local
@@ -125,19 +124,6 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80
 
-## MySQL database settings
-mysql:
-  enabled: true
-  auth:
-    database: laravel
-    username: laravel
-    password: ""
-    rootPassword: ""
-  primary:
-    persistence:
-      enabled: true
-      size: 8Gi
-
 ## Redis cache settings
 redis:
   enabled: false
@@ -226,6 +212,24 @@ cronJobs:
   #     requests:
   #       cpu: 100m
   #       memory: 128Mi
+
+## Database configuration for DB Operator
+## When enabled, creates a Database CRD and automatically mounts the generated secret
+database:
+  enabled: false
+  # Name of the database cluster instance (required when enabled)
+  instance: ""
+  # Name of the database to create (required when enabled)
+  name: ""
+  # Whether to enable deletion protection for the database
+  deletionProtected: true
+  # Custom secret templates for MySQL database credentials
+  secretsTemplates:
+    DB_HOST: "{{ .DatabaseHost }}"
+    DB_PORT: "{{ .DatabasePort }}"
+    DB_DATABASE: "{{ .DatabaseName }}"
+    DB_USERNAME: "{{ .UserName }}"
+    DB_PASSWORD: "{{ .Password }}"
 
 ## Secret mounts configuration
 ## Reference existing secrets and mount their keys as environment variables
