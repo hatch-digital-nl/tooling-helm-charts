@@ -1,0 +1,85 @@
+{{- if .Values.migrationJob.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "yii2.fullname" . }}-migration
+  labels:
+    {{- include "yii2.labels" . | nindent 4 }}
+    app.kubernetes.io/component: migration
+  {{- if .Values.migrationJob.hook.enabled }}
+  annotations:
+    argocd.argoproj.io/hook: {{ .Values.migrationJob.hook.phase }}
+    argocd.argoproj.io/hook-delete-policy: {{ .Values.migrationJob.hook.deletePolicy }}
+  {{- end }}
+spec:
+  backoffLimit: {{ .Values.migrationJob.backoffLimit }}
+  activeDeadlineSeconds: {{ .Values.migrationJob.activeDeadlineSeconds }}
+  template:
+    metadata:
+      labels:
+        {{- include "yii2.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: migration
+    spec:
+      restartPolicy: {{ .Values.migrationJob.restartPolicy }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+        - name: {{ .Values.sharedVolume.name }}
+          emptyDir: {}
+      initContainers:
+        - name: data-container
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.dataImage.repository }}:{{ .Values.dataImage.tag | default "latest" }}"
+          imagePullPolicy: {{ .Values.dataImage.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Copying yii2 application files to shared volume..."
+              cp -r /app/. /data/
+          volumeMounts:
+            - name: {{ .Values.sharedVolume.name }}
+              mountPath: /data
+          resources:
+            {{- toYaml .Values.resources.init | nindent 12 }}
+      containers:
+        - name: migration
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.phpImage.repository }}:{{ .Values.phpImage.tag | default "latest" }}"
+          imagePullPolicy: {{ .Values.phpImage.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Starting yii2 migration..."
+              cd /var/www/html
+              {{ .Values.migrationJob.command }}
+              echo "Migration completed successfully"
+          env:
+            {{- include "yii2.env" . | nindent 12 }}
+          {{- if .Values.secretRefs }}
+          envFrom:
+            {{- include "yii2.envFrom" . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: {{ .Values.sharedVolume.name }}
+              mountPath: /var/www/html
+          resources:
+            {{- toYaml .Values.migrationJob.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
