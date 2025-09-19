@@ -163,7 +163,7 @@ migrationJob:
     # Delete policy - what to do with the job after completion
     deletePolicy: BeforeHookCreation
   # Migration command to run
-  command: "php yii migrate"
+  command: "php yii migrate --interactive=0"
   # Resource limits and requests for the migration job
   resources:
     limits:
