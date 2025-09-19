@@ -151,6 +151,32 @@ queueWorkers:
   #       cpu: 100m
   #       memory: 128Mi
 
+## Migration job configuration
+## Runs Yii2 migrations before deployment using ArgoCD PreSync hooks
+migrationJob:
+  enabled: true
+  # ArgoCD hook configuration
+  hook:
+    enabled: true
+    # Hook phase - PreSync runs before the main deployment
+    phase: PreSync
+    # Delete policy - what to do with the job after completion
+    deletePolicy: BeforeHookCreation
+  # Migration command to run
+  command: "php yii migrate"
+  # Resource limits and requests for the migration job
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  # Job settings
+  backoffLimit: 3
+  activeDeadlineSeconds: 600
+  restartPolicy: Never
+
 ## Cron jobs configuration
 cronJobs:
   enabled: false
