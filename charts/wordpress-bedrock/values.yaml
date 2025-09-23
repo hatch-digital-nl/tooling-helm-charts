@@ -130,7 +130,7 @@ probes:
     timeoutSeconds: 5
     failureThreshold: 6
     successThreshold: 1
-    path: /
+    path: /healthz
     port: 8080
   readiness:
     enabled: true
@@ -139,7 +139,7 @@ probes:
     timeoutSeconds: 5
     failureThreshold: 6
     successThreshold: 1
-    path: /
+    path: /healthz
     port: 8080
   startup:
     enabled: false
@@ -148,7 +148,7 @@ probes:
     timeoutSeconds: 5
     failureThreshold: 30
     successThreshold: 1
-    path: /
+    path: /healthz
     port: 8080
 
 ## Redis cache settings

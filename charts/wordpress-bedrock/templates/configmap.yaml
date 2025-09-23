@@ -13,6 +13,10 @@ data:
 
         index index.php index.html index.htm;
 
+        location /healthz {
+            return 200 "ok";
+        }
+
         location / {
             try_files $uri $uri/ /index.php?$args;
         }
