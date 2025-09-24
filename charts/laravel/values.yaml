@@ -221,6 +221,8 @@ database:
   instance: ""
   # Name of the database to create (required when enabled)
   name: ""
+  # Database driver to use (mysql, pgsql, sqlite, sqlsrv)
+  driver: "mysql"
   # Whether to enable deletion protection for the database
   deletionProtected: true
   # Custom secret templates for MySQL database credentials
