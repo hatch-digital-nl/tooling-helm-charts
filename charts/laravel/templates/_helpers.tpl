@@ -94,7 +94,7 @@ Laravel environment variables
 {{- end }}
 {{- if .Values.database.enabled }}
 # Database credentials from DB Operator
-- name: DB_DRIVER
+- name: DB_CONNECTION
   value: {{ .Values.database.driver | quote }}
 - name: DB_HOST
   valueFrom:

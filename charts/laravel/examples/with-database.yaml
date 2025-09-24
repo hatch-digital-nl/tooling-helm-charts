@@ -6,7 +6,7 @@ database:
   enabled: true
   instance: "production-mysql"  # Replace with your actual MySQL database cluster name
   name: "laravel_app"
-  driver: "mysql"  # Database driver: mysql, pgsql, sqlite, sqlsrv
+  driver: "mysql"  # Database connection driver: mysql, pgsql, sqlite, sqlsrv
   deletionProtected: true
   # secretsTemplates are pre-configured in values.yaml for MySQL compatibility
 
