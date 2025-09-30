@@ -9,6 +9,10 @@ metadata:
     {{- include "laravel.labels" $ | nindent 4 }}
     app.kubernetes.io/component: worker
     worker.laravel.io/name: {{ .name }}
+  {{- if $.Values.syncWaves.enabled }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "{{ $.Values.syncWaves.application }}"
+  {{- end }}
 spec:
   replicas: {{ .replicas | default 1 }}
   selector:

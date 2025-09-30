@@ -12,10 +12,13 @@ metadata:
   name: {{ $fullName }}
   labels:
     {{- include "laravel.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
   annotations:
+    {{- if .Values.syncWaves.enabled }}
+    argocd.argoproj.io/sync-wave: "{{ .Values.syncWaves.application }}"
+    {{- end }}
+    {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
-  {{- end }}
+    {{- end }}
 spec:
   {{- if .Values.ingress.className }}
   ingressClassName: {{ .Values.ingress.className }}

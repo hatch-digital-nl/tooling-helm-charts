@@ -9,6 +9,10 @@ metadata:
   labels:
     {{- include "laravel.labels" . | nindent 4 }}
     app.kubernetes.io/component: scheduler
+  {{- if .Values.syncWaves.enabled }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "{{ .Values.syncWaves.application }}"
+  {{- end }}
 spec:
   schedule: "* * * * *"
   concurrencyPolicy: Forbid
@@ -93,6 +97,10 @@ metadata:
     {{- include "laravel.labels" $ | nindent 4 }}
     app.kubernetes.io/component: cronjob
     cronjob.laravel.io/name: {{ .name }}
+  {{- if $.Values.syncWaves.enabled }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "{{ $.Values.syncWaves.application }}"
+  {{- end }}
 spec:
   schedule: {{ .schedule | quote }}
   concurrencyPolicy: Forbid

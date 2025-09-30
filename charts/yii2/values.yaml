@@ -2,6 +2,19 @@
 nameOverride: ""
 fullnameOverride: ""
 
+## ArgoCD Sync Waves configuration
+## Controls the order of resource deployment in ArgoCD
+syncWaves:
+  enabled: true
+  # Database CRD must be created first so KindaDB operator can provision database
+  database: -3
+  # Redis can be deployed after database but before application
+  redis: -2
+  # Migration job runs after database is ready but before application starts
+  migration: -1
+  # All application resources deploy together
+  application: 0
+
 
 ## Image settings
 phpImage:
@@ -157,7 +170,7 @@ migrationJob:
   enabled: true
   # ArgoCD hook configuration
   hook:
-    enabled: true
+    enabled: false
     # Hook phase - PreSync runs before the main deployment
     phase: PreSync
     # Delete policy - what to do with the job after completion

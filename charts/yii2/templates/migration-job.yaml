@@ -6,11 +6,14 @@ metadata:
   labels:
     {{- include "yii2.labels" . | nindent 4 }}
     app.kubernetes.io/component: migration
-  {{- if .Values.migrationJob.hook.enabled }}
   annotations:
+    {{- if .Values.migrationJob.hook.enabled }}
     argocd.argoproj.io/hook: {{ .Values.migrationJob.hook.phase }}
     argocd.argoproj.io/hook-delete-policy: {{ .Values.migrationJob.hook.deletePolicy }}
-  {{- end }}
+    {{- end }}
+    {{- if .Values.syncWaves.enabled }}
+    argocd.argoproj.io/sync-wave: "{{ .Values.syncWaves.migration }}"
+    {{- end }}
 spec:
   backoffLimit: {{ .Values.migrationJob.backoffLimit }}
   activeDeadlineSeconds: {{ .Values.migrationJob.activeDeadlineSeconds }}

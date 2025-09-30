@@ -5,6 +5,10 @@ metadata:
   name: {{ .Values.database.name }}
   labels:
     {{- include "yii2.labels" . | nindent 4 }}
+  {{- if .Values.syncWaves.enabled }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "{{ .Values.syncWaves.database }}"
+  {{- end }}
 spec:
   secretName: {{ include "yii2.fullname" . }}-db-credentials
   instance: {{ .Values.database.instance | quote }}

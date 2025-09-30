@@ -6,6 +6,7 @@ metadata:
   name: {{ include "common.redis.name" . }}
   labels:
     {{- include "common.redis.labels" . }}
+  {{- include "common.redis.syncWaveAnnotations" . }}
 spec:
   replicas: 1
   selector:
