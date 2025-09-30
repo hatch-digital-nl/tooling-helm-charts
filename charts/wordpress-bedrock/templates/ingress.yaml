@@ -12,10 +12,13 @@ metadata:
   name: {{ $fullName }}
   labels:
     {{- include "wordpress-bedrock.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
   annotations:
+    {{- if .Values.syncWaves.enabled }}
+    argocd.argoproj.io/sync-wave: "{{ .Values.syncWaves.application }}"
+    {{- end }}
+    {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
-  {{- end }}
+    {{- end }}
 spec:
   {{- if and .Values.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
   ingressClassName: {{ .Values.ingress.className }}

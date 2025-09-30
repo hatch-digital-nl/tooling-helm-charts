@@ -1,14 +1,16 @@
 apiVersion: v2
 name: wordpress-bedrock
-description: A Helm chart for WordPress based on Bedrock structure
+description: A Helm chart for WordPress based on Bedrock structure with ArgoCD Sync Waves support
 type: application
-version: 0.22.0
+version: 0.23.0
 keywords:
   - wordpress
   - cms
+  - argocd
+  - sync-waves
 maintainers:
   - name: Unframed
 dependencies:
   - name: common
-    version: 0.1.0
+    version: 0.2.0
     repository: "file://../../common"

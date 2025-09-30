@@ -1,6 +1,6 @@
 {{- if .Values.redis.enabled }}
-{{/* Create context for Redis */}}
-{{- $redisContext := dict "Values" .Values "fullname" (include "wordpress-bedrock.fullname" .) "labels" (include "wordpress-bedrock.labels" .) "selectorLabels" (include "wordpress-bedrock.selectorLabels" .) -}}
+{{/* Create context for Redis with sync wave support */}}
+{{- $redisContext := dict "Values" .Values "fullname" (include "wordpress-bedrock.fullname" .) "labels" (include "wordpress-bedrock.labels" .) "selectorLabels" (include "wordpress-bedrock.selectorLabels" .) "syncWaves" .Values.syncWaves -}}
 
 {{/* Include common Redis templates */}}
 {{- include "common.redis" $redisContext }}

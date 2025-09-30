@@ -188,7 +188,7 @@ migrationJob:
   enabled: true
   # ArgoCD hook configuration
   hook:
-    enabled: true
+    enabled: false
     # Hook phase - PreSync runs before the main deployment
     phase: PreSync
     # Delete policy - what to do with the job after completion
