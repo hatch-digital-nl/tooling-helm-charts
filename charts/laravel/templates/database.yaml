@@ -5,6 +5,10 @@ metadata:
   name: {{ .Values.database.name }}
   labels:
     {{- include "laravel.labels" . | nindent 4 }}
+  {{- if .Values.syncWaves.enabled }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "{{ .Values.syncWaves.database }}"
+  {{- end }}
 spec:
   secretName: {{ include "laravel.fullname" . }}-db-credentials
   instance: {{ .Values.database.instance | quote }}

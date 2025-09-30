@@ -1,0 +1,130 @@
+# Example configuration with ArgoCD Sync Waves enabled
+# This example shows how to deploy a Laravel application with proper sync wave ordering
+
+# Basic application configuration
+nameOverride: "laravel-app"
+fullnameOverride: "my-laravel-app"
+
+# ArgoCD Sync Waves - enabled by default
+syncWaves:
+  enabled: true
+  database: -3
+  redis: -2
+  migration: -1
+  application: 0
+
+# Database configuration using KindaDB operator
+database:
+  enabled: true
+  instance: "mysql-cluster"
+  name: "laravel_app"
+  driver: "mysql"
+  deletionProtected: true
+  secretsTemplates:
+    DB_HOST: "{{ .DatabaseHost }}"
+    DB_PORT: "{{ .DatabasePort }}"
+    DB_DATABASE: "{{ .DatabaseName }}"
+    DB_USERNAME: "{{ .UserName }}"
+    DB_PASSWORD: "{{ .Password }}"
+
+# Redis configuration
+redis:
+  enabled: true
+  auth:
+    enabled: false
+  persistence:
+    enabled: true
+    size: 1Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+# Migration job configuration
+migrationJob:
+  enabled: true
+  hook:
+    enabled: false  # Disabled in favor of sync waves
+  command: "php artisan migrate --force"
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+
+# Queue workers
+queueWorkers:
+  enabled: true
+  workers:
+    - name: default
+      replicas: 2
+      connection: database
+      queue: default
+      tries: 3
+      timeout: 60
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+
+# Cron jobs
+cronJobs:
+  enabled: true
+  scheduler: true
+
+# Application scaling
+replicaCount: 2
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - host: laravel-app.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: laravel-app-tls
+      hosts:
+        - laravel-app.example.com
+
+# Resource limits
+resources:
+  php:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  nginx:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+# Laravel environment variables
+laravel:
+  env:
+    APP_ENV: production
+    APP_DEBUG: "false"
+    LOG_CHANNEL: stderr
+    LOG_LEVEL: info
+    CACHE_DRIVER: redis
+    SESSION_DRIVER: redis
+    QUEUE_CONNECTION: database
+
+# Secret references (database credentials will be auto-mounted)
+secretRefs:
+  - "my-laravel-app-db-credentials"

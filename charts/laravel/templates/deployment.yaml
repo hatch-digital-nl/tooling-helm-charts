@@ -4,6 +4,10 @@ metadata:
   name: {{ include "laravel.fullname" . }}
   labels:
     {{- include "laravel.labels" . | nindent 4 }}
+  {{- if .Values.syncWaves.enabled }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "{{ .Values.syncWaves.application }}"
+  {{- end }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}

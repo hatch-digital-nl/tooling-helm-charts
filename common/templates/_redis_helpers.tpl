@@ -32,3 +32,13 @@ Create Redis pod selector labels
 {{- .selectorLabels | nindent 8 }}
         app.kubernetes.io/component: redis
 {{- end -}}
+
+{{/*
+Create Redis sync wave annotations
+*/}}
+{{- define "common.redis.syncWaveAnnotations" -}}
+{{- if and .syncWaves .syncWaves.enabled }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "{{ .syncWaves.redis }}"
+{{- end -}}
+{{- end -}}
