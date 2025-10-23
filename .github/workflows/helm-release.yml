@@ -129,10 +129,10 @@ jobs:
               echo "Processing chart: $chart"
           
               # Update dependencies - dit zal automatisch de common chart downloaden
-              if [ -f "${{ env.CHARTS_DIR }}/$chart/Chart.yaml" ]; then
-                echo "Updating dependencies for $chart"
-                helm dependency update ${{ env.CHARTS_DIR }}/$chart
-              fi
+              # if [ -f "${{ env.CHARTS_DIR }}/$chart/Chart.yaml" ]; then
+              #   echo "Updating dependencies for $chart"
+              #   helm dependency update ${{ env.CHARTS_DIR }}/$chart
+              # fi
           
               # Lint de chart
               helm lint ${{ env.CHARTS_DIR }}/$chart
