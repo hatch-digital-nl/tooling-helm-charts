@@ -3,18 +3,52 @@ entries:
   common:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.432925655Z"
+    created: "2025-10-23T14:21:58.445542005Z"
+    description: Common templates for Helm charts with ArgoCD Sync Waves support
+    digest: b809a0c9d8eb5d9607b0503da7e1eaa16456f73cc1acb310b0ee33dea35927cc
+    name: common
+    type: application
+    urls:
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/common-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-10-23T14:21:58.44527646Z"
     description: Common templates for Helm charts
     digest: d8fe138536756d7ecb910549787a7c708b3a8c581dd5f367f3e52af9b5e66192
     name: common
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/common-0.1.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/common-0.1.0.tgz
     version: 0.1.0
   laravel:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.439065132Z"
+    created: "2025-10-23T14:21:58.45297891Z"
+    dependencies:
+    - name: common
+      repository: file://../../common
+      version: 0.2.0
+    description: A Helm chart for Laravel PHP Framework applications with ArgoCD Sync
+      Waves support
+    digest: 13471d215c86f6260c7dc652628dc9b41be603fba836f354b26d6750c1d201a4
+    keywords:
+    - laravel
+    - php
+    - framework
+    - web
+    - argocd
+    - sync-waves
+    maintainers:
+    - name: Unframed
+    name: laravel
+    type: application
+    urls:
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/laravel-0.15.0.tgz
+    version: 0.15.0
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-10-23T14:21:58.451732186Z"
     dependencies:
     - name: common
       repository: file://../../common
@@ -31,11 +65,11 @@ entries:
     name: laravel
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/laravel-0.14.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/laravel-0.14.0.tgz
     version: 0.14.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.437951842Z"
+    created: "2025-10-23T14:21:58.45062934Z"
     dependencies:
     - name: common
       repository: file://../../common
@@ -52,11 +86,11 @@ entries:
     name: laravel
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/laravel-0.13.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/laravel-0.13.0.tgz
     version: 0.13.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.436815027Z"
+    created: "2025-10-23T14:21:58.449528277Z"
     dependencies:
     - name: common
       repository: file://../../common
@@ -73,11 +107,11 @@ entries:
     name: laravel
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/laravel-0.12.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/laravel-0.12.0.tgz
     version: 0.12.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.435684154Z"
+    created: "2025-10-23T14:21:58.44826933Z"
     dependencies:
     - name: common
       repository: file://../../common
@@ -94,11 +128,11 @@ entries:
     name: laravel
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/laravel-0.11.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/laravel-0.11.0.tgz
     version: 0.11.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.434580211Z"
+    created: "2025-10-23T14:21:58.447194847Z"
     dependencies:
     - name: common
       repository: file://../../common
@@ -115,11 +149,11 @@ entries:
     name: laravel
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/laravel-0.10.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/laravel-0.10.0.tgz
     version: 0.10.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.447064144Z"
+    created: "2025-10-23T14:21:58.460643133Z"
     dependencies:
     - name: common
       repository: file://../../common
@@ -136,11 +170,11 @@ entries:
     name: laravel
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/laravel-0.9.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/laravel-0.9.0.tgz
     version: 0.9.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.446022428Z"
+    created: "2025-10-23T14:21:58.459659018Z"
     dependencies:
     - name: common
       repository: file://../../common
@@ -157,11 +191,11 @@ entries:
     name: laravel
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/laravel-0.8.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/laravel-0.8.0.tgz
     version: 0.8.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.445018272Z"
+    created: "2025-10-23T14:21:58.458655948Z"
     dependencies:
     - name: common
       repository: file://../common
@@ -178,11 +212,11 @@ entries:
     name: laravel
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/laravel-0.7.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/laravel-0.7.0.tgz
     version: 0.7.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.444032191Z"
+    created: "2025-10-23T14:21:58.457673025Z"
     dependencies:
     - name: common
       repository: file://../common
@@ -199,11 +233,11 @@ entries:
     name: laravel
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/laravel-0.6.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/laravel-0.6.0.tgz
     version: 0.6.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.443058032Z"
+    created: "2025-10-23T14:21:58.456704269Z"
     dependencies:
     - name: common
       repository: file://../common
@@ -220,11 +254,11 @@ entries:
     name: laravel
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/laravel-0.5.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/laravel-0.5.0.tgz
     version: 0.5.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.442031274Z"
+    created: "2025-10-23T14:21:58.455731386Z"
     dependencies:
     - name: common
       repository: file://../common
@@ -241,11 +275,11 @@ entries:
     name: laravel
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/laravel-0.4.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/laravel-0.4.0.tgz
     version: 0.4.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.440518811Z"
+    created: "2025-10-23T14:21:58.454792836Z"
     dependencies:
     - name: common
       repository: file://../common
@@ -262,11 +296,11 @@ entries:
     name: laravel
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/laravel-0.3.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/laravel-0.3.0.tgz
     version: 0.3.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.439467297Z"
+    created: "2025-10-23T14:21:58.454125281Z"
     description: A Helm chart for Laravel PHP Framework applications
     digest: 310b30608f71e55a7f39d8dbef9b75b379b3dfd5d3cc944895f7da2848f2b340
     keywords:
@@ -279,11 +313,11 @@ entries:
     name: laravel
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/laravel-0.2.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/laravel-0.2.0.tgz
     version: 0.2.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.43342908Z"
+    created: "2025-10-23T14:21:58.446002905Z"
     description: A Helm chart for Laravel PHP Framework applications
     digest: 077200d5426a1f8e44b66814350e1deae584b94d020af7933cac206bac0b5ad4
     keywords:
@@ -296,18 +330,18 @@ entries:
     name: laravel
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/laravel-0.1.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/laravel-0.1.0.tgz
     version: 0.1.0
   react:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.451399972Z"
+    created: "2025-10-23T14:21:58.465038233Z"
     dependencies:
     - name: common
       repository: file://../../common
-      version: 0.1.0
+      version: 0.2.0
     description: A Helm chart for React applications
-    digest: 666cc13368f1583843ef39bad605d1bfa63fd64de136f2f16bc49dc59d5cf030
+    digest: e1c9655f126699d17331193adc06ba34b7e624ca49439bfce607c8ef467483f4
     keywords:
     - react
     - frontend
@@ -317,11 +351,11 @@ entries:
     name: react
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/react-0.7.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/react-0.7.0.tgz
     version: 0.7.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.450818991Z"
+    created: "2025-10-23T14:21:58.464463441Z"
     dependencies:
     - name: common
       repository: file://../../common
@@ -337,11 +371,11 @@ entries:
     name: react
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/react-0.6.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/react-0.6.0.tgz
     version: 0.6.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.450235425Z"
+    created: "2025-10-23T14:21:58.463870556Z"
     description: A Helm chart for React applications
     digest: 9c418aa9646315788d1acb428e9980067e688f9a1b425aa3e7fcaba8ed347dba
     keywords:
@@ -353,11 +387,11 @@ entries:
     name: react
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/react-0.5.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/react-0.5.0.tgz
     version: 0.5.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.449661848Z"
+    created: "2025-10-23T14:21:58.463314399Z"
     description: A Helm chart for React applications
     digest: 214e73ab6f638b06bcd53662b406748780ea30961711122b6df878b590d4cc53
     keywords:
@@ -369,11 +403,11 @@ entries:
     name: react
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/react-0.4.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/react-0.4.0.tgz
     version: 0.4.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.448355228Z"
+    created: "2025-10-23T14:21:58.462724339Z"
     dependencies:
     - name: common
       repository: file://../common
@@ -389,11 +423,11 @@ entries:
     name: react
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/react-0.3.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/react-0.3.0.tgz
     version: 0.3.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.447766863Z"
+    created: "2025-10-23T14:21:58.46164998Z"
     description: A Helm chart for React applications
     digest: 7231c5654eedc8ed6d27b6885b71bd7577e293f683f6f4c2b6ef75ead76d87cf
     keywords:
@@ -405,11 +439,11 @@ entries:
     name: react
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/react-0.2.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/react-0.2.0.tgz
     version: 0.2.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.447416575Z"
+    created: "2025-10-23T14:21:58.460998635Z"
     description: A Helm chart for React applications
     digest: 695fe6c658b1cc99789d74d2dae8b39e2a1ac9fe2286344bde44aac2e5ac307f
     keywords:
@@ -421,11 +455,32 @@ entries:
     name: react
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/react-0.1.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/react-0.1.0.tgz
     version: 0.1.0
   wordpress-bedrock:
   - apiVersion: v2
-    created: "2025-09-24T11:32:41.464107842Z"
+    created: "2025-10-23T14:21:58.479534975Z"
+    dependencies:
+    - name: common
+      repository: file://../../common
+      version: 0.2.0
+    description: A Helm chart for WordPress based on Bedrock structure with ArgoCD
+      Sync Waves support
+    digest: 3b9e7344073e80fe8c6a3807120b287da31f51cbd6295cf209f535d665ef402c
+    keywords:
+    - wordpress
+    - cms
+    - argocd
+    - sync-waves
+    maintainers:
+    - name: Unframed
+    name: wordpress-bedrock
+    type: application
+    urls:
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.23.0.tgz
+    version: 0.23.0
+  - apiVersion: v2
+    created: "2025-10-23T14:21:58.4784057Z"
     dependencies:
     - name: common
       repository: file://../../common
@@ -440,10 +495,10 @@ entries:
     name: wordpress-bedrock
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.22.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.22.0.tgz
     version: 0.22.0
   - apiVersion: v2
-    created: "2025-09-24T11:32:41.463150554Z"
+    created: "2025-10-23T14:21:58.476591182Z"
     dependencies:
     - name: common
       repository: file://../../common
@@ -458,10 +513,10 @@ entries:
     name: wordpress-bedrock
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.21.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.21.0.tgz
     version: 0.21.0
   - apiVersion: v2
-    created: "2025-09-24T11:32:41.462170174Z"
+    created: "2025-10-23T14:21:58.47564087Z"
     dependencies:
     - name: common
       repository: file://../../common
@@ -476,10 +531,10 @@ entries:
     name: wordpress-bedrock
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.20.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.20.0.tgz
     version: 0.20.0
   - apiVersion: v2
-    created: "2025-09-24T11:32:41.460729318Z"
+    created: "2025-10-23T14:21:58.474239778Z"
     dependencies:
     - name: common
       repository: file://../../common
@@ -494,10 +549,10 @@ entries:
     name: wordpress-bedrock
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.19.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.19.0.tgz
     version: 0.19.0
   - apiVersion: v2
-    created: "2025-09-24T11:32:41.459834859Z"
+    created: "2025-10-23T14:21:58.473311537Z"
     dependencies:
     - name: common
       repository: file://../../common
@@ -512,10 +567,10 @@ entries:
     name: wordpress-bedrock
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.18.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.18.0.tgz
     version: 0.18.0
   - apiVersion: v2
-    created: "2025-09-24T11:32:41.458918358Z"
+    created: "2025-10-23T14:21:58.472317517Z"
     dependencies:
     - name: common
       repository: https://unframed-nl.github.io/helm_charts
@@ -530,10 +585,10 @@ entries:
     name: wordpress-bedrock
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.17.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.17.0.tgz
     version: 0.17.0
   - apiVersion: v2
-    created: "2025-09-24T11:32:41.45799276Z"
+    created: "2025-10-23T14:21:58.471431976Z"
     dependencies:
     - name: common
       repository: file://../common
@@ -548,10 +603,10 @@ entries:
     name: wordpress-bedrock
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.16.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.16.0.tgz
     version: 0.16.0
   - apiVersion: v2
-    created: "2025-09-24T11:32:41.456801243Z"
+    created: "2025-10-23T14:21:58.470504447Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: ef8147ae7a8a83b9915ae72ad935fee832def2808770712f6de1e772f07eccbf
     keywords:
@@ -562,11 +617,11 @@ entries:
     name: wordpress-bedrock
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.15.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.15.0.tgz
     version: 0.15.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.455433605Z"
+    created: "2025-10-23T14:21:58.469056314Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: fcf7fa23ed0dbdf5c0b200552283a2129bd516ead13b0b1db199cdaf337704b9
     keywords:
@@ -577,11 +632,11 @@ entries:
     name: wordpress-bedrock
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.14.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.14.0.tgz
     version: 0.14.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.454686813Z"
+    created: "2025-10-23T14:21:58.468328337Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: bc05b962d13aee10825097845ce7e134b5a775fb0412796d9ed10013dc06bc59
     keywords:
@@ -592,11 +647,11 @@ entries:
     name: wordpress-bedrock
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.13.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.13.0.tgz
     version: 0.13.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.453890478Z"
+    created: "2025-10-23T14:21:58.467529778Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: f8f7e58eddaa605cf02d2bae08f688b47f46954bd015514c4fc23b586e70617b
     keywords:
@@ -607,11 +662,11 @@ entries:
     name: wordpress-bedrock
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.12.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.12.0.tgz
     version: 0.12.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.453084665Z"
+    created: "2025-10-23T14:21:58.466728695Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: ec88d5de9520d0e4e8176f3a24799c6968331857f607fd7fadf4028d757e6924
     keywords:
@@ -622,11 +677,11 @@ entries:
     name: wordpress-bedrock
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.11.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.11.0.tgz
     version: 0.11.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.4523791Z"
+    created: "2025-10-23T14:21:58.466019342Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: afc19db25a1fb6202ec4801224ae53a0e872cc0ab87ee0c7061b05a0be81319f
     keywords:
@@ -637,11 +692,11 @@ entries:
     name: wordpress-bedrock
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.10.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.10.0.tgz
     version: 0.10.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.467910219Z"
+    created: "2025-10-23T14:21:58.482489083Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: 7493a65ea530ff7c3ccd6e2b315fd50b1c3f7120ac3c68b3c0e61e2be979e12a
     keywords:
@@ -652,11 +707,11 @@ entries:
     name: wordpress-bedrock
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.9.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.9.0.tgz
     version: 0.9.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.467412034Z"
+    created: "2025-10-23T14:21:58.481992156Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: 984c1db287f20a469055f5566051584f0ee7e25f1c96cb4fb688cff38529d637
     keywords:
@@ -667,11 +722,11 @@ entries:
     name: wordpress-bedrock
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.8.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.8.0.tgz
     version: 0.8.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.466885475Z"
+    created: "2025-10-23T14:21:58.481514506Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: 53dd971d7b325f794e2cf2ad1f73bfe57a698b8871964195e56ebfb220a40791
     keywords:
@@ -682,11 +737,11 @@ entries:
     name: wordpress-bedrock
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.7.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.7.0.tgz
     version: 0.7.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.466337396Z"
+    created: "2025-10-23T14:21:58.481022117Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: a314c3f12a72a78da07a4015846444de1922c59bec28e341b7b61f58e3b13d3b
     keywords:
@@ -697,11 +752,11 @@ entries:
     name: wordpress-bedrock
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.6.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.6.0.tgz
     version: 0.6.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.465494766Z"
+    created: "2025-10-23T14:21:58.480510854Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: 48885bcb089108c0b55577c7585a32a4ae96e6af78abed119be622c25d83fbae
     keywords:
@@ -712,11 +767,11 @@ entries:
     name: wordpress-bedrock
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.5.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.5.0.tgz
     version: 0.5.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.464539632Z"
+    created: "2025-10-23T14:21:58.479991106Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: e283aa26c221bf6270e7a5fccef75f39c32022100597c9b934fded036bf95c04
     keywords:
@@ -727,11 +782,11 @@ entries:
     name: wordpress-bedrock
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.3.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.3.0.tgz
     version: 0.3.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.461178041Z"
+    created: "2025-10-23T14:21:58.474673977Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: 3ccb3a30249809945d81567534df9ee6e30baf2e21c5b02f1a86a7c620a388a0
     keywords:
@@ -742,11 +797,11 @@ entries:
     name: wordpress-bedrock
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.2.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.2.0.tgz
     version: 0.2.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.451852411Z"
+    created: "2025-10-23T14:21:58.465491879Z"
     description: A Helm chart for WordPress based on Bedrock structure
     digest: f873bb80075c75a0a2d2eada39f04cf41cc3d8a90cd2b48796d90bb2be894d5e
     keywords:
@@ -757,12 +812,36 @@ entries:
     name: wordpress-bedrock
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.1.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/wordpress-bedrock-0.1.0.tgz
     version: 0.1.0
   yii2:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.469317832Z"
+    created: "2025-10-23T14:21:58.484978413Z"
+    dependencies:
+    - name: common
+      repository: file://../../common
+      version: 0.2.0
+    description: A Helm chart for Yii2 PHP Framework applications with ArgoCD Sync
+      Waves support
+    digest: 6db6b30df790d40863fd3f8f1e8ca622f2803f1b19ee34759690848c98c876fd
+    keywords:
+    - yii2
+    - php
+    - framework
+    - web
+    - argocd
+    - sync-waves
+    maintainers:
+    - name: Unframed
+    name: yii2
+    type: application
+    urls:
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/yii2-0.11.0.tgz
+    version: 0.11.0
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-10-23T14:21:58.483956248Z"
     dependencies:
     - name: common
       repository: file://../../common
@@ -779,11 +858,11 @@ entries:
     name: yii2
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/yii2-0.10.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/yii2-0.10.0.tgz
     version: 0.10.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.476402897Z"
+    created: "2025-10-23T14:21:58.492182151Z"
     dependencies:
     - name: common
       repository: file://../../common
@@ -800,11 +879,11 @@ entries:
     name: yii2
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/yii2-0.9.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/yii2-0.9.0.tgz
     version: 0.9.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.475484783Z"
+    created: "2025-10-23T14:21:58.491270953Z"
     dependencies:
     - name: common
       repository: file://../../common
@@ -821,11 +900,11 @@ entries:
     name: yii2
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/yii2-0.8.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/yii2-0.8.0.tgz
     version: 0.8.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.474523598Z"
+    created: "2025-10-23T14:21:58.490360305Z"
     dependencies:
     - name: common
       repository: file://../../common
@@ -842,11 +921,11 @@ entries:
     name: yii2
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/yii2-0.7.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/yii2-0.7.0.tgz
     version: 0.7.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.472866094Z"
+    created: "2025-10-23T14:21:58.489516822Z"
     dependencies:
     - name: common
       repository: file://../../common
@@ -863,11 +942,11 @@ entries:
     name: yii2
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/yii2-0.6.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/yii2-0.6.0.tgz
     version: 0.6.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.472037288Z"
+    created: "2025-10-23T14:21:58.488650126Z"
     dependencies:
     - name: common
       repository: file://../common
@@ -884,11 +963,11 @@ entries:
     name: yii2
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/yii2-0.5.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/yii2-0.5.0.tgz
     version: 0.5.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.471235703Z"
+    created: "2025-10-23T14:21:58.487816723Z"
     dependencies:
     - name: common
       repository: file://../common
@@ -905,11 +984,11 @@ entries:
     name: yii2
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/yii2-0.4.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/yii2-0.4.0.tgz
     version: 0.4.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.470504961Z"
+    created: "2025-10-23T14:21:58.486737102Z"
     dependencies:
     - name: common
       repository: file://../common
@@ -926,11 +1005,11 @@ entries:
     name: yii2
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/yii2-0.3.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/yii2-0.3.0.tgz
     version: 0.3.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.469731298Z"
+    created: "2025-10-23T14:21:58.485425186Z"
     description: A Helm chart for Yii2 PHP Framework applications
     digest: d27d7c0724a29d666614d8627304652810b0622333b9c628f04c4f05b539c3e4
     keywords:
@@ -943,11 +1022,11 @@ entries:
     name: yii2
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/yii2-0.2.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/yii2-0.2.0.tgz
     version: 0.2.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-09-24T11:32:41.46833138Z"
+    created: "2025-10-23T14:21:58.482940163Z"
     description: A Helm chart for Yii2 PHP Framework applications
     digest: 465927ebcc5a2e3874b6ae228d0e79e011abac33ea65d57e99ed84054ccecbf0
     keywords:
@@ -960,6 +1039,6 @@ entries:
     name: yii2
     type: application
     urls:
-    - https://unframed-nl.github.io/tooling-helm-charts/yii2-0.1.0.tgz
+    - https://hatch-digital-nl.github.io/tooling-helm-charts/yii2-0.1.0.tgz
     version: 0.1.0
-generated: "2025-09-24T11:32:41.43247027Z"
+generated: "2025-10-23T14:21:58.443967263Z"
