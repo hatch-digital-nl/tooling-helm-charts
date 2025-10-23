@@ -17,19 +17,19 @@ syncWaves:
 
 ## Image settings
 phpImage:
-  repository: ghcr.io/unframed-nl/tooling-docker-containers/php
+  repository: ghcr.io/hatch-digital-nl/tooling-docker-containers/php
   tag: "8.3"
   pullPolicy: Always
 
 ## Nginx image for serving WordPress
 nginxImage:
-  repository: ghcr.io/unframed-nl/tooling-docker-containers/nginx
+  repository: ghcr.io/hatch-digital-nl/tooling-docker-containers/nginx
   tag: "latest"
   pullPolicy: Always
 
 ## Data container for application files
 dataImage:
-  repository: ghcr.io/unframed-nl/hosting-dummy-page
+  repository: ghcr.io/hatch-digital-nl/hosting-dummy-page
   tag: "latest"
   pullPolicy: IfNotPresent
 

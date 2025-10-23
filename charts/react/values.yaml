@@ -4,13 +4,13 @@ fullnameOverride: ""
 
 ## Nginx image
 nginxImage:
-  repository: ghcr.io/unframed-nl/tooling-docker-containers/nginx
+  repository: ghcr.io/hatch-digital-nl/tooling-docker-containers/nginx
   tag: "latest"
   pullPolicy: IfNotPresent
 
 ## Data container for application files
 dataImage:
-  repository: ghcr.io/unframed-nl/hosting-dummy-page
+  repository: ghcr.io/hatch-digital-nl/hosting-dummy-page
   tag: "latest"
   pullPolicy: IfNotPresent
 
