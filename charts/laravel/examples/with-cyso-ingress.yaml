@@ -1,0 +1,40 @@
+# Example values file demonstrating cysoIngress usage
+# This shows how to use the simplified cysoIngress configuration
+# instead of the complex traditional ingress setup
+
+nameOverride: "my-testing"
+
+# Traditional ingress configuration (disabled when using cysoIngress)
+ingress:
+  enabled: false
+
+# Simplified cysoIngress configuration
+cysoIngress:
+  enabled: true
+  hosts:
+    - "my.testing.cirmar.com"
+    - "my.testing.cirmar.dkpnt.nl"
+  # Optional: Override default annotations (these are the defaults)
+  annotations:
+    cert-manager.io/cluster-issuer: cyso-letsencrypt
+  # Optional: Override default path settings
+  path: "/"
+  pathType: ImplementationSpecific
+
+# Application configuration
+laravel:
+  env:
+    APP_ENV: production
+    APP_DEBUG: "false"
+    APP_URL: "https://my.testing.cirmar.com"
+
+# Database configuration
+database:
+  enabled: true
+  instance: "mysql-cluster"
+  name: "my_testing_db"
+  driver: "mysql"
+
+# Enable sync waves for proper deployment order
+syncWaves:
+  enabled: true

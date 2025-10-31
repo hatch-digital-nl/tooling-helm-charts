@@ -66,6 +66,22 @@ ingress:
           pathType: ImplementationSpecific
   tls: []
 
+## Cyso Ingress settings
+## Simplified ingress configuration that automatically creates separate ingress resources
+## for each host with Let's Encrypt certificates
+cysoIngress:
+  enabled: false
+  # List of hostnames to create ingress resources for
+  hosts: []
+  # - "my.testing.cirmar.com"
+  # - "my.testing.cirmar.dkpnt.nl"
+  # Optional: Override default annotations
+  annotations:
+    cert-manager.io/cluster-issuer: cyso-letsencrypt
+  # Optional: Override default path configuration
+  path: "/"
+  pathType: ImplementationSpecific
+
 ## Resource settings
 resources:
   php:

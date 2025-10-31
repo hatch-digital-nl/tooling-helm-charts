@@ -48,3 +48,39 @@ spec:
           {{- end }}
     {{- end }}
 {{- end }}
+---
+{{- if .Values.cysoIngress.enabled -}}
+{{- $fullName := include "react.fullname" . -}}
+{{- $svcPort := .Values.service.port -}}
+{{- range $index, $host := .Values.cysoIngress.hosts }}
+{{- $hostSafe := $host | replace "." "-" | replace "*" "wildcard" }}
+{{- $secretName := printf "%s-%s-tls" $fullName $hostSafe }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-{{ $hostSafe }}
+  labels:
+    {{- include "react.labels" $ | nindent 4 }}
+  annotations:
+    {{- with $.Values.cysoIngress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  tls:
+    - secretName: {{ $secretName }}
+      hosts:
+        - {{ $host | quote }}
+  rules:
+    - host: {{ $host | quote }}
+      http:
+        paths:
+          - path: {{ $.Values.cysoIngress.path | default "/" }}
+            pathType: {{ $.Values.cysoIngress.pathType | default "ImplementationSpecific" }}
+            backend:
+              service:
+                name: {{ $fullName }}
+                port:
+                  number: {{ $svcPort }}
+---
+{{- end }}
+{{- end }}

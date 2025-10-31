@@ -51,3 +51,42 @@ spec:
           {{- end }}
     {{- end }}
 {{- end }}
+---
+{{- if .Values.cysoIngress.enabled -}}
+{{- $fullName := include "laravel.fullname" . -}}
+{{- $svcPort := .Values.service.port -}}
+{{- range $index, $host := .Values.cysoIngress.hosts }}
+{{- $hostSafe := $host | replace "." "-" | replace "*" "wildcard" }}
+{{- $secretName := printf "%s-%s-tls" $fullName $hostSafe }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-{{ $hostSafe }}
+  labels:
+    {{- include "laravel.labels" $ | nindent 4 }}
+  annotations:
+    {{- if $.Values.syncWaves.enabled }}
+    argocd.argoproj.io/sync-wave: "{{ $.Values.syncWaves.application }}"
+    {{- end }}
+    {{- with $.Values.cysoIngress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  tls:
+    - secretName: {{ $secretName }}
+      hosts:
+        - {{ $host | quote }}
+  rules:
+    - host: {{ $host | quote }}
+      http:
+        paths:
+          - path: {{ $.Values.cysoIngress.path | default "/" }}
+            pathType: {{ $.Values.cysoIngress.pathType | default "ImplementationSpecific" }}
+            backend:
+              service:
+                name: {{ $fullName }}
+                port:
+                  number: {{ $svcPort }}
+---
+{{- end }}
+{{- end }}
