@@ -10,7 +10,7 @@ redis:
     pullPolicy: IfNotPresent
   auth:
     enabled: false
-    password: ""
+  password: ""
   persistence:
     enabled: false
     size: 1Gi
@@ -23,3 +23,39 @@ redis:
   config:
     maxmemory: "100mb"
     maxmemoryPolicy: "allkeys-lru"
+
+## Postgres (CloudNativePG) settings
+postgres:
+  enabled: false
+  cnpg:
+    description: ""
+    cluster:
+      imageName: ghcr.io/cloudnative-pg/postgresql:16
+      instances: 2
+      resources: {}
+      storage:
+        size: 10Gi
+        storageClassName: ""
+      bootstrap:
+        initdb:
+          database: app
+          owner: app
+          secret:
+            name: ""
+      monitoring:
+        enabled: false
+      postgresql: {}
+    backup:
+      enabled: false
+      retentionPolicy: "7d"
+      schedule: "0 3 * * *"
+      s3:
+        destinationPath: ""
+        endpoint: s3.amazonaws.com
+        region: ""
+        wal:
+          compression: ""
+        s3Credentials:
+          existingSecret: ""
+          accessKeyId: ""
+          secretAccessKey: ""

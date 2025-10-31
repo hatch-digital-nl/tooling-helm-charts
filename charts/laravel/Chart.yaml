@@ -2,7 +2,7 @@ apiVersion: v2
 name: laravel
 description: A Helm chart for Laravel PHP Framework applications with ArgoCD Sync Waves support
 type: application
-version: 0.16.0
+version: 0.17.0
 appVersion: "1.0.0"
 keywords:
   - laravel
